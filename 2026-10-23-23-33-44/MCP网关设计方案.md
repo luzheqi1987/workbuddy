@@ -201,7 +201,7 @@
 | `strip_prefix`               | TINYINT       | 否             | 1      | 仅 `REST_PROXY`：转发是否剥掉切面。1=剥（`/proxy/order/list` → `/list`），0=保留整段                                                                                                |
 | `timeout_ms`                 | INT           | 否             | 5000   | 单次后端请求超时（毫秒），不含连接建立与 MCP 握手                                                                                                                                      |
 | `init_timeout_ms`            | INT           | 否             | 15000  | 仅 `MCP_REMOTE`：`initialize` 握手超时，与请求超时分开                                                                                                                         |
-| `qpm_limit`                  | DECIMAL(10,4) | 否             | -      | **授予一个新调用方时的默认配额**——注意是**每调用方**，**不是本服务的总量**（7.2）。单位 **次/分钟（QPM）**，**允许小数**（`DECIMAL(10,4)`，见 7.2 单位一节）。真正生效的配额在 `mcp_gw_grant`（2.5）上，这一列只是"授权行没填时自动给多少"。**NULL 表示回退到 env 缺省值，不是"不限"**——不提供"不限"这种配置，避免漏配等于裸奔                          |
+| `qpm_limit`                  | DECIMAL(10,4) | 否             | -      | **授予一个新调用方时的默认配额**——注意是**每调用方**，**不是本服务的总量**（7.2）。单位 **次/分钟（QPM）**，**允许小数**（`DECIMAL(10,4)`，见 7.2 单位一节）。真正生效的配额在 `mcp_gw_grant`（2.5）上，这一列只是"授权行没填时自动给多少"。**NULL 表示回退到 env 缺省值 `default-qpm`，不是"不限"**——不提供"不限"这种配置，避免漏配等于裸奔。允许 NULL 是为了"服务刚注册、配额还没定"这段能安全运行，**但它是临时状态**：留空的服务要按 7.2 的巡检定期告警补齐                          |
 | `burst`                      | INT           | 否             | -      | 令牌桶容量（允许的瞬时突发，单位"次"，**天然是整数**）。NULL 时取 **`ceil(qpm_limit / 60)`**（≈1 秒的量；注意不是取 `qpm_limit`，那会让突发容量放大 60 倍），最小 1                                                  |
 | `config_json`                | JSON          | 否             | {}     | **服务级非凭证配置**（严禁放密钥），模板里用 `.config.x` 引用；密钥一律放 `mcp_gw_auth_scheme`                                                                                               |
 | `protocol_strategy`          | VARCHAR(16)   | 否             | LEGACY | 仅 `MCP_REMOTE`：`LEGACY` / `MODERN` / `AUTO`（自动探测多一次请求，后端协议已知就写死）                                                                                                 |
@@ -1592,6 +1592,8 @@ tokens = tokens + math.floor(elapsed * qpm / 60000)   -- ❌ 看着合理，实�
 
 - **`NULL` 一律表示"回退到兜底值"，不表示"不限"。** 这个约定必须写死在系统里：**不提供"不限"这种配置**。想要更大的配额就填大，而不是开一个绕过开关——**"NULL = 不限"一旦成立，漏配就等于把限流整套关掉了**；
 - 兜底链：**工具覆盖 → 授权行 → 服务默认值 → env 缺省 → env 也没配就启动失败**（fail-fast，不要等到线上才发现所有配额都是缺省值）；
+- **`default-qpm` 是"临时额度"，不是"通用额度"。** 它存在的理由是让"服务刚注册、配额还没定"这一段有确定行为，而不是让配置者拿它当统一配额用。因此取一个**保守值**（如 `60`，≈1 QPS），并且**必须配一条巡检**：`SELECT id,name FROM mcp_gw_service WHERE qpm_limit IS NULL` 定期告警。没有这条巡检，它会悄悄从"临时值"变成"永久值"——一批漏配服务共享同一个没人记得的数字。**从 429 响应里看不出来**（`X-RateLimit-Scope` 只给桶名，不给配额来源），只能靠指标 `source=env_default` 的那条序列发现，而那需要有人真的去看面板；**一个兜底值如果长期生效且无人知晓，它就已经不是兜底了，而是事实上的配置**；
+- `default-burst` 与 `burst` 同一规则：未配时取 `ceil(default-qpm / 60)`，`ceil(60/60)=1`，即缺省口径下严格匀速；
 - `burst` 未配时取 **`ceil(qpm_limit / 60)`**（≈1 秒的量），最小为 1。**这里最容易写错**：沿用 QPS 时代的"`burst` 缺省取 `qpm_limit`"会让突发容量凭空放大 60 倍——配 `600 QPM`（≈10 QPS）却允许一次打满 600 次突发，等于限流形同虚设。低频配额（`qpm_limit < 60`）算出来必然是 1，**这是对的**：每小时 10 次本来就不该有"攒着一次性打完"的额度，不要为了数字好看把它拉大；需要严格匀速的调用方显式把 `burst` 填成 1；
 - **一次调用只扣一个桶**（命中的那一档），**不存在多档叠加扣减**。例：`AGNT` 对 `order` 服务配 600 QPM，又给 `createOrder` 单独配 60 QPM——那么 `createOrder` 打的是 60 那个桶，其余工具打 600 那个桶，**两者互不影响、各自计满各自的**。这条是刻意选的：叠加扣减会让"到底哪个配额卡住了这次调用"变成一个需要推理的问题，而单桶让每次 429 都自证来源；
 - **工具级配额只对"确实需要单独保护的工具"配**：它是逃生舱口而非常规旋钮。一个服务 30 个工具里通常只有一两个重量级操作需要单独限，其余继承授权行的值即可——**配得越细，越要有人维护**，别为了"看起来精细"把每个工具都填一遍；
@@ -1636,7 +1638,7 @@ tokens = tokens + math.floor(elapsed * qpm / 60000)   -- ❌ 看着合理，实�
 | `mcp_gw_tool_call_duration_seconds`      | Histogram | `sys_code,service,tool`                | 工具级时延，定位"哪个系统的哪个工具慢"                                                      |
 | `mcp_gw_tool_list_seconds`               | Histogram | `sys_code`                             | `tools/list` 时延；聚合多个后端，串行拉取时延会叠加到首 token，必须单独看                            |
 | `mcp_gw_auth_failures_total`             | Counter   | `face,reason`                          | 鉴权失败。`reason`：`MISSING`/`INVALID`/`DISABLED`/`SYS_CODE_MISMATCH`/`TOO_MANY_FAILURES`（7.1-A）。**失败时身份不可信，一律不带 `sys_code`** |
-| `mcp_gw_ratelimit_rejected_total`        | Counter   | `sys_code,service,tool,source`          | 限流拒绝量。**`source` = 命中哪一档**：`tool_quota`（工具覆盖）/ `grant`（授权行）/ `service_default`（服务默认值）。**不带 scope 标签时这个指标没法用**——看到拒绝量涨了却不知道是哪个配额卡住的，等于把排查推回猜谜                    |
+| `mcp_gw_ratelimit_rejected_total`        | Counter   | `sys_code,service,tool,source`          | 限流拒绝量。**`source` = 配额取自哪一级**：`tool_quota`（工具覆盖）/ `grant`（授权行）/ `service_default`（服务行默认值）/ `env_default`（谁都没配）。**不带这个标签时指标没法用**——看到拒绝量涨了却不知道是哪个配额卡住的，等于把排查推回猜谜；`env_default` 一旦出现在面板上，说明有人在用临时额度跑业务（7.2）                    |
 | `mcp_gw_backend_duration_seconds`        | Histogram | `service,tool`                         | 纯后端耗时（不含网关处理），区分"我们慢"还是"后端慢"                                              |
 | `mcp_gw_upstream_health`                 | Gauge     | `service,endpoint,instance`            | 后端地址熔断状态（1 可用、0 熔断）。**必须带 `instance`（本 Pod 标识）**：熔断是每 Pod 的局部状态（2.7），只按 `service` 聚合会看到互相矛盾的取值 |
 | `mcp_gw_service_tools`                   | Gauge     | `service`                              | 各服务暴露的工具数，异常跌零=后端掉线或 spec 解析失败                                            |
