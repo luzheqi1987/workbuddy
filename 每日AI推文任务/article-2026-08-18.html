@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>从卖芯片到卖土地、跑赢博尔特：AI正在变硬</title>
+</head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.85;color:#1f2937;max-width:680px;margin:0 auto;padding:20px 18px;background:#fff;">
+<p style="font-size:15px;color:#6b7280;margin-bottom:24px;text-align:center;line-height:1.7;">8月17日到18日，AI圈的信息密度高得罕见。英伟达不再满足于卖芯片，开始卖土地、电力和厂房；智谱用一个没换基座的模型，把网络安全做到了反超闭源前沿；OpenAI让主Agent自己决定该派谁上场，告别手动选模型；宇树的一台机器人原地跳高2米、跑赢了博尔特；一周之内，7笔融资、20亿元涌进具身智能产业链的每一个环节。五件事，五个方向，指向同一个结论：AI的竞争，正在从“聪明”转向“硬核”。</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>英伟达：从卖芯片，到卖土地、电力和厂房</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI硬件 · 算力基建 · AI工厂</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">8月17日，黄仁勋发表署名文章《保障智能基础设施安全》，宣布与能源开发商SB Energy达成合作，锁定位于美国俄亥俄州波特斯茅斯PORTS-Pike科技园区的土地、电力与厂房资源，OpenAI将作为唯一租户在此建造并运营AI工厂。英伟达同时向SB Energy投资15亿美元，成为继软银集团和OpenAI之后又一位投资人。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">这是一次意味深长的角色升级。过去英伟达卖的是芯片、封装、内存和网络，现在它把“土地、电力与厂房”也纳入自己的战略版图。园区初始部署4.25吉瓦的AI工厂产能，未来还可扩至8吉瓦；每一代英伟达AI工厂系统约相当于150万张GPU，对应约1500亿至2000亿美元的收入机会。到2030年，OpenAI承诺部署的英伟达算力基础设施总量约12吉瓦，将为英伟达带来总计约6000亿美元的算力商业机会。针对外界“循环融资”的质疑，黄仁勋直接回应：“这不是循环融资，OpenAI将自行支付租金。”</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">与卖土地同步，英伟达的Vera Rubin NVL72也宣布全面量产。单机架集成72颗Rubin GPU和36颗Vera CPU，通过NVLink 6高速互联；在相同150MW功耗下，GB200 NVL72的吞吐量仅8万Token/秒，Vera Rubin NVL72达到80万Token/秒，整整10倍提升；完成同等训练只需Blackwell四分之一的GPU数量，推理成本压缩到十分之一；在DeepSeek R1 671B的实测负载下，每GPU可达1648 TFLOPS。代价同样惊人：单台机架物料成本已超5300万元，内存成本较上一代暴涨435%。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#dc2626;">值得关注：</strong>英伟达正从“AI硬件供应商”向“AI工厂的组织者”延伸，用自身信用为AI基础设施融资背书，锁定长期且独占的算力部署空间。这既是护城河的加深，也是风险的集中——当算力需求的可见度足够高时，提前锁定土地与电力是聪明的供应链管理；可一旦AI需求周期逆转，5300万一台的机架和长达20年的土地租约，都会从资产变成负担。更深一层的信号是：算力的稀缺，已经从芯片蔓延到了电网和土地。</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#2563eb;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>智谱GLM-5.3：不换基座，纯靠后训练反超闭源</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI软件 · 开源大模型 · 网络安全</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">8月14日，智谱发布新一代基座模型GLM-5.3，总参数规模7530亿，采用MoE架构、每次运行仅激活440亿参数。它最反直觉的地方在于：基座模型与上一代GLM-5.2完全一致，所有能力跃升全部来自后训练阶段的更长时间、更丰富任务环境与更大规模强化学习。编程能力较前代提升约50%，Terminal-Bench 3.0得分从4.6跃升至28.3。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">真正让GLM-5.3出圈的，是网络安全能力。在国际漏洞推理评测CyberGym中，GLM-5.3以84.5%的成绩超过Anthropic的Mythos 5（83.8%）和GPT-5.6 Sol（83.6%）；在更考验深度推理的ExploitBench测试中，它取得54.4%的成绩，是上一代模型（24.4%）的两倍多。评测之外，这项能力经过了实战检验：智谱联合清华大学、南开大学以及绿盟、奇安信、腾讯玄武等国内头部安全团队，在269个项目中累计发现2436个漏洞，其中1097个为中高危，覆盖Android、Windows、macOS及国民级通信软件，还揪出一个潜伏约40年的DNS协议漏洞——攻击者只需少量特殊请求，就能把服务器计算压力放大近8万倍，影响全球超1000万处公网DNS服务。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">这些漏洞已陆续提交CNNVD、CNVD等国家漏洞库，进入负责任披露与协同修复流程。智谱同步启动“开源的盾”计划，对重点开源项目开展持续安全审计，模型权重将在两周内以宽松许可开源。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#2563eb;">值得关注：</strong>“不换基座、纯靠后训练”的意义，远超单个模型本身。它证明了大模型竞争的下半场，“后训练”比“参数规模”更具决定性——这对算力受限的国产阵营是重大利好，意味着不必每次都拼更大的预训练，就能在编程、安全这些具体能力上追上甚至反超闭源。更现实的信号在于，7月Hugging Face曾遭OpenAI失控AI智能体攻击、最终靠GLM-5.2完成取证，如今“开源的盾”把安全能力从少数闭源厂商的特权，变成了开源社区可用的公共品。</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#d97706;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>OpenAI多智能体V2：告别手动选模型</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI Coding · 多智能体 · 模型编排</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">8月16日，OpenAI在Codex中全量上线GPT-5.6“多智能体V2”。这套架构的核心变化是：主Agent会自动把不同的子任务委派给不同的模型（包括轻量模型Luna），每个子Agent还能独立设置推理强度。OpenAI总裁Greg Brockman的说法直截了当：“朝着告别手动选模型的方向前进。”</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">背后的逻辑是一笔经济账。一个复杂任务里，大约只有20%的步骤真正需要最强模型，其余80%的步骤交给更便宜的模型就能胜任。过去用户要么手动在不同模型间切换，要么所有步骤都让最贵的模型扛——两者都不划算。多智能体V2把“模型选择”从用户的负担变成了系统的智能：拆解任务、按难度分发、汇总结果，全程自动完成。与之配套，ChatGPT前端也做了一轮极致优化：应用加载速度飙升94%、堆内存增长减少87.8%、网络请求数暴降98.2%，一个741轮的“怪物级”对话打开时间从27.62秒降到1.66秒。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">这一变化呼应了一个被反复提及的判断：前沿模型的领先地位平均只能维持约41天，同等智能水平下模型价格每年下降约10倍。当“最强模型”的头衔每隔一个多月就换人，单一模型的护城河越来越浅，真正能沉淀下来的能力，是“在正确的时间、把正确的任务派给正确的模型”——也就是编排能力本身。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#d97706;">值得关注：</strong>“告别手动选模型”意味着Agent系统正在成为“模型之上的模型”。用户不再需要关心底层用的是Claude还是GPT还是某个开源小模型，只需要描述任务。这对开发者的启示是清晰的：竞争壁垒正在从“调参、选模型”上移到“设计任务拆解与编排策略”。当模型的智能逐渐趋同，决定成本、速度和效果上限的，是那层看不见的调度逻辑。</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#7c3aed;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>宇树“超人”：原地跳高2米，跑赢了博尔特</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">具身智能 · 人形机器人 · 运动能力</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">8月17日，宇树科技发布人形机器人“超人”的预览视频，公布了一组令人咋舌的数据：原地跳高2米，极限速度12.66米/秒（腿长0.85米）。作为对照，吉尼斯人类原地跳高纪录是162.89厘米，由美国人克里斯托弗·斯佩尔在2019年创造；牙买加“飞人”博尔特在2009年百米跑出9.58秒的世界纪录，60到80米区间的最高瞬时速度也不过12.42米/秒。宇树据此宣称，“超人”的原地跳高和极限速度均超越全人类的对应纪录。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">从视频看，“超人”是银白色金属机身、无头部造型，躯干紧凑、四肢修长，整机研发仅用了3个多月。宇树团队表示，这款机型仍处于持续优化阶段，未来几个月还有很大的完善空间。值得注意的是，宇树此刻正站在IPO的关键节点上：发行价150.80元、对应市值609.93亿元、首发市盈率219倍，此前网上中签率仅0.018%创下科创板新低，预计本周即将正式挂牌。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">这已经是继春晚上跳舞之后，人形机器人在“运动能力”上的又一次标志性突破。从“能跳”到“跳得比人高、跑得比人快”，背后是电机、关节、控制算法和全身动力学的一整套工程能力的跃升。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#7c3aed;">值得关注：</strong>冷静地看，“跑赢博尔特”更像是一句精准的营销话术——12.66米/秒是瞬时速度，不是百米平均速度，机器人的“跑赢”与博尔特的9.58秒并不在同一赛道上比较。但话术之外，技术是真的：原地跳高2米、瞬时爆发速度超过人类顶尖短跑选手，这组指标证明了国产人形机器人在高爆发运动能力上的真实进步。真正的产业价值，还要看这些运动能力能否转化为工厂里稳定的拧螺丝、家庭里可靠的端茶倒水。对即将上市的宇树来说，“超人”既是技术宣言，也是一次恰到好处的IPO前亮相。</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#0891b2;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>一周7笔融资超20亿：资本开始“扫货”全产业链</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">具身智能 · 融资 · 产业链</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">具身智能的热钱，正在从“押注整机”转向“扫货全产业链”。最近一周，赛道内接连落地7笔融资，总额超过20亿元：具身大脑公司原力无限完成近10亿元的A轮及A+轮融资，由敦鸿资产及头部国资平台领投；深海智人完成超5亿元A轮；什方科技完成近3亿元B轮及B+轮，五源资本、小米集团、蔚来资本联合入局；意优科技完成超2亿元B轮，由三星风险投资领投；亮源新创完成数亿元Pre-A轮，创始人姜旭是ChatGPT的核心贡献者；此外还有恒璇机器人、众擎机器人等多笔早期融资。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">把这7笔融资摊开看，覆盖了从“大脑”到“关节”再到“整机”的几乎每一个环节：原力无限和亮源新创代表“大脑”层，前者做具身大脑AtomBrain和因果世界模型，后者做超大规模具身模型训练；意优科技、恒璇机器人卡位一体化微型伺服关节与谐波关节模组；众擎机器人则是整机厂布局上海。资本在同一周里同时下注这些不同环节，传递的信号非常明确——具身智能的投资逻辑已经从“押一台机器”升级为“布一张产业链的网”。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">更值得玩味的是国际巨头的卡位。三星8月14日刚与LG同日官宣机器人战略，紧接着就领投了中国的意优科技——用投资的方式，直接卡进中国机器人供应链的核心环节。而原力无限近10亿元的融资，大头砸向的是“具身大脑”而非“身体”，说明资本正在从硬件竞赛转向智能竞赛。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#0891b2;">值得关注：</strong>一周20亿只是具身智能资本热潮的一个切面。当国际巨头用真金白银卡位中国关节企业、当头部国资平台领投“具身大脑”，信号已经足够清晰：具身智能正从“讲故事”走向“建生态”。但硬币的另一面是，这个赛道仍高度依赖研发投入，盈利兑现远未到来。钱越多，竞争越激烈；洗牌来临时，能活下来的，一定是那些既懂“大脑”、又能把“身体”真正送进工厂和家庭的玩家。</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">五件事在同一个坐标点上交汇。英伟达卖土地和电力，证明算力的稀缺已经延伸到电网与厂房；智谱纯靠后训练反超闭源，证明“聪明”不再依赖“更大”；OpenAI让模型自动调度模型，证明竞争壁垒正从单个模型上移到编排层；宇树机器人跑赢博尔特，证明“身体”开始挑战“肉体”的极限；20亿资本扫货全产业链，证明具身智能正从故事走向产业。它们的共同点只有一个：AI的价值，正在从“参数”和“对话”这些软的东西，流向“芯片、电力、土地、关节、速度”这些硬的东西。这是AI变硬的一天，也或许是它真正开始落地的一天。</p>
+</body>
+</html>

@@ -1,0 +1,12 @@
+# 系统文件
+.DS_Store
+
+# 各任务的中间产物（可重建）
+**/output/
+**/generated-images/
+
+# 密钥与凭证 —— 严禁入库
+每日AI推文任务/.env
+*.env
+*.pem
+*.key

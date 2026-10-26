@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI硬装：宇树IPO、Cursor抢GitHub、灵巧手破万</title>
+</head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.85;color:#1f2937;max-width:680px;margin:0 auto;padding:20px 18px;background:#fff;">
+<p style="font-size:15px;color:#6b7280;margin-bottom:24px;text-align:center;line-height:1.7;">8月18日到19日，AI圈的关键词只有一个——“硬”。Cerebras把推理加速器做到了GPU方案30倍速、瞄准50万亿参数模型；Cursor趁GitHub全球宕机七小时推出Origin代码托管平台，要为“智能体时代”重建版本控制基础设施；OpenAI一边叫停下一代模型Astra的部分训练活动，一边推出ChatGPT青少年版，两端同时收紧安全；灵巧手单价从前年的5万元跌到今年不足1万元，销量翻倍、融资暴涨1500%；今天宇树科技正式登陆科创板，成为A股人形机器人整机第一股。五件事，五个方向，同一个信号：AI正在从“软件”和“对话”这些软东西，走向“算力、托管、安全、零部件、资本”这些硬东西。</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>Cerebras CS-4：推理速度最高30倍于GPU，瞄准50万亿参数</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI硬件 · 推理加速 · 晶圆级芯片</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">8月18日，Cerebras Systems在旧金山发布新一代AI推理加速器CS-4。这是全球首款基于其全新Nexus架构构建的系统，由3颗WSE-3 Turbo晶圆级引擎驱动，单机柜可提供750 PFLOPS的AI算力、129.6 PB/s的内存带宽、7.2 Tb/s的系统I/O带宽，并可承载超过50万亿参数规模的模型。Cerebras CEO Andrew Feldman在媒体沟通会上给出了一个颇为激进的承诺：到2027年底，公司将累计交付600兆瓦的算力，下一代芯片和系统的速度将是现在的4倍、吞吐量是现在的20倍。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">CS-4最直观的卖点是速度。在GPT-OSS-120B负载下，CS-4每用户每秒生成超过4400个Token，最高可达传统GPU方案的30倍；每瓦吞吐量最高是上一代CS-3的10倍，这组数据对数据中心运营方尤其敏感——它直接决定了推理服务的单位Token成本能否被继续压低。Cerebras CTO Sean Lie介绍，CS-4的组件数量比上一代减少约50%，意味着同样的数据中心空间可以更快速地部署；首批出货就在本季度内启动。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">Cerebras走的是一条完全不同于英伟达的路线。它不做传统GPU的“缩小版”或“改良版”，而是用整张12英寸晶圆做一颗芯片，靠“晶圆级集成”绕开片间通信的开销；它的客户名单里包括OpenAI、阿联酋G42、MBZUAI和AWS，主要应用方向是“超低延迟、超大模型的推理”。在OpenAI刚刚把Cerebras集成进GPT-5.6 Sol的“Ultrafast API层”、将推理速度提升14倍之后，CS-4把这套打法的上限又向前推了一步。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#dc2626;">值得关注：</strong>Cerebras的市值目前远小于英伟达，但它代表的是另一种AI硬件的可能性。当大模型的训练越来越集中在少数几家超大规模云厂商手中，“推理”才是绝大多数企业真正每天都在花钱的场景——CS-4瞄准的正是这一块。30倍速不是营销话术，而是单位Token成本直接被砍到原来的三分之一乃至更低；当推理成本继续走低，被解锁的不只是“AI用得起”，还有“AI用得起时再去想更复杂任务”的整条价值链。下一个值得盯紧的，是英伟达是否会推出对位的“专门推理加速器”——这场推理侧的对决，可能比训练侧更早到来。</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#2563eb;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>Cursor Origin：GitHub宕机七小时，它趁势上线了“智能体时代的Git”</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI Coding · 代码托管 · 多智能体协同</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">8月17日，AI编程公司Cursor（Anysphere）向所有付费用户推送全新代码托管平台Origin。Origin直接把代码仓库建进了Cursor客户端，在编辑器侧新增“Codebase”标签页，用户可以新建、克隆、推送项目，也支持与已有GitHub仓库同步；首批接入的生态伙伴是Vercel、Depot和Buildkite——前两者负责预览部署和CI，后者补齐流水线。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">Origin的核心创新在PR（合并请求）层。它完整继承了Cursor今年年初收购的Graphite那套“堆叠式PR”机制——传统GitHub是为人类设计的：一天几次clone、push、提PR，节奏和频率都是人；但Agent场景下，几十上百个智能体可能在同一个仓库里并行读写，单一任务分支一天几十次commit，传统Git会系统性过载。Origin能扛住“数千Agent同时读写单一仓库、每秒20次以上提交、每小时近30万次克隆”，内置自动冲突消解、CI失败修复和Review评论处理，全球同步延迟控制在400毫秒以内。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">上线时间的选择，被行业评论者认为是“教科书级的”：当天GitHub发生了一次长达约七小时的全球性故障，所有push分支、单点登录、Copilot服务都无法正常使用。Origin工程师、也是Graphite联合创始人Tomas Reimers在Hacker News上被问到Origin与GitHub究竟有什么不同时，回应干脆：“功能上我们有意先做到与GitHub平起平坐。”但他也明确表示，未来几周会陆续上线更深的Agent集成——比如能“理解智能体写的代码”的工具、能“自动把PR推到可合并状态”的自动化。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">这次发布并非孤立。Cursor母公司Anysphere此前刚被SpaceX以约600亿美元全股票收购，正在用SpaceX/xAI的Colossus集群（10万+张GPU）从零训练一个参数规模与Claude Opus、GPT系列同级、底层计算量为前代10至20倍的自研大模型。算力、模型、编辑器、托管平台——一条“AI原生开发栈”正在被打通。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#2563eb;">值得关注：</strong>Origin不是要“做一个比GitHub好用的代码托管”，而是要回答一个新问题：当读代码、写代码、提PR、合并代码的主体从人类变成智能体，源码控制基础设施应当怎么重新设计？当Agent成为仓库的“一等公民”，PR的体积、合并的节奏、Review的对象都将被重写——GitHub过去十五年积累的范式，未必能直接平移到下一代开发者的工作流。Cursor用Origin给出了它自己的答案，而整个软件工程行业的“基础设施换装”，可能由此开始。</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#d97706;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>OpenAI双端收紧安全：暂停Astra部分训练，推出ChatGPT青少年版</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI软件 · 大模型安全 · 用户治理</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">8月18日，OpenAI一天之内连发两条与“安全”有关的公告——一头面向模型、一头面向用户。在模型端，公司确认下一代前沿模型Astra的内部测试中已经表现出“足以让公司无法排除达到关键网络安全能力等级”的能力，因此决定暂停Astra的部分训练活动；公司首席科学家雅库布·帕乔茨基在记者会上说：“这些模型的能力提升速度会比过去快得多，正因如此，我们才更加重视加强安全防护措施。”OpenAI同时披露，对最新一批计划部署的模型已经暂停强化学习（RL）训练两周，目的是为了进一步加强研究环境的安全性、扩大监控系统的覆盖范围。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">监控系统本身也在被重新设计。OpenAI引入了激活分类器（activation classifiers），对每一个被采样的Token进行实时监测，把异常情况上报给自动化调查系统；系统目标是在检测到令人担忧的活动后，能够在30分钟内发出警报；一旦判断可能有人或模型突破了关键安全边界，则生成最高优先级警报，立即通知安全、安保和研究团队。代价是显著的：OpenAI估算，这套监控系统带来的额外算力开销，大约相当于被监控推理算力的20%。安全，已成为一项被真金白银买单的工程指标。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">用户端，OpenAI正式推出面向13至17岁用户的“ChatGPT for Teens”。系统如果判断用户未满18岁、或用户自行声明年龄在13至17岁之间，会自动切换到这个版本。该模式默认启用更严格的安全防护：限制暴力、自伤、性相关内容，新增“负责任作业提醒”引导学习而非直接给答案；家长可以关联账户、设置“免打扰时段”，并在系统识别到特定安全风险时收到提醒；模型本身被禁止使用浪漫语言或暗示自身有情感。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">两项动作放在一起看，反映出OpenAI面临的安全问题正在同时向两个方向扩展：模型越来越强，需要防止AI本身在复杂任务中越界；用户面越来越广，则需要针对青少年等群体建立更严格的使用边界。事实上，Astra的暂停并非本月首次——8月7日OpenAI就因类似原因暂停过相关活动。两个月内两次按“暂停键”，在大模型竞争如此激烈的当下，显得格外耐人寻味。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#d97706;">值得关注：</strong>一边“踩油门”、一边“踩刹车”，是头部大模型公司未来相当长一段时间的新常态。“安全”不再是一份对外发布的白皮书，而是一笔被直接写进训练流程和推理账单里的成本：当监控系统要吃掉20%的算力、暂停训练要损失数周迭代节奏，“前沿模型的领先优势”这个游戏里，时间的换算单位正在被改写。对中国大模型阵营来说，这意味着同一道题——如何在迭代速度和治理强度之间找到平衡——同样会被摆上桌面。</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#7c3aed;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>灵巧手跌破万元：人形机器人产业链首次出现“成本拐点”</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">具身智能 · 核心零部件 · 灵巧手</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">8月18日，央视财经等媒体披露了人形机器人核心零部件的最新行情：在深圳一家灵巧驱控技术公司的装配车间，产线已经满负荷运转；公司总经理葛鹏遥透露，今年1月到8月，灵巧手销量超过4000只，同比增长翻了一番；几乎同一时间，赛感科技的总经理熊赓超表示，今年柔性触觉传感器的销量较去年增长10倍，产能出现不足，今年新产线已投产，相关产品价格也下降约30%。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">最具冲击力的是单价。董事长田波给出了一组对比数据：前年灵巧手平均一只5万元，今年基本能做到1万元以下；其六自由度灵巧手的价格区间是6000-8000元。柔性触觉传感器作为“电子皮肤”，让灵巧手从单纯“机械抓取”升级为“多维触觉感知”：研发总监谢赛介绍，今年通过电子皮肤的改进，最小可以测到10毫克量级的力——即便抓起鸡蛋，也不会捏碎；带载3公斤的抓取测试，依托热管理技术与先进控制算法，可以做到一百万次之后表面温度仍维持在40℃左右，使用寿命和稳定性同步跃升。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">销量、单价、技术三项同时变化的背后，是市场预期的迅速抬升：2025年中国灵巧手市场销量约1.92万只，2026年有望达7.02万只，到2030年有望突破43万只。资本市场迅速给出反应：根据高工类人形机器人机构不完全统计，截至2026年7月30日，国内灵巧手赛道累计融资金额突破80亿元，较2025年同期的5亿元同比增长1500%；今年上半年传感器领域（含柔性触觉传感器）累计融资约30亿元，同比增长160.87%。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">更细颗粒度的信号是：触觉传感器在灵巧手上的装配率，从去年的“技术验证”迅速转向今年的“规模化采购”，目前带触觉版本产品的占比已达60%以上，触觉版本溢价普遍在30%至50%之间。华创证券分析指出，灵巧手并非单一市场，而是按需求严格切分的多层价格带，其中1至5万元价格带是当前最活跃、最具放量潜力的量价平衡点——也是国产厂商的主战场。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#7c3aed;">值得关注：</strong>灵巧手跌破万元，是人形机器人产业从“演示视频”走向“批量化交付”的第一个真实拐点。当核心零部件的价格不再高到让整机厂商却步、销量增长又能反向支撑零部件的产能扩张，“正反馈循环”第一次在产业链上形成闭环。可以预见，下一个降价周期大概率会出现在高精度力矩电机、谐波减速器、激光雷达这些更基础的零部件——具身智能的成本曲线，正在被中国供应链以肉眼可见的速度往下拉。</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#0891b2;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>宇树科技今日正式登陆科创板：人形机器人整机第一股</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">具身智能 · IPO · 整机龙头</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">8月19日，宇树科技股份有限公司在上海证券交易所科创板正式挂牌交易，成为A股人形机器人整机第一股。本次发行价150.80元/股，对应市值约609.93亿元，发行市盈率219倍——显著高于行业平均的38.56倍；网上申购已于8月10日完成，中签率仅0.018%，创下科创板新低纪录，上市前的市场关注度由此可见一斑。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">战略配售阵容相当“重磅”：深度求索（DeepSeek关联实体）、腾讯旗下上海启善、社保基金、中国石油集团昆仑资本等机构一同进入，覆盖了AI大模型厂商、互联网巨头和国家级长期资金三类典型买家。本次募集资金净额约59.17亿元，将用于公司产能扩张、技术研发和供应链建设，加速整机产品从研发验证向规模化量产过渡。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">宇树上市的时点，几乎踩在了具身智能赛道的所有“风口”上：一周之前，公司刚发布了人形机器人“超人”的预览视频，公布原地跳高2米、极限瞬时速度12.66米/秒的数据，对标对象是博尔特的人类百米纪录；公司累计量产下线的人形机器人数量已超过1.8万台，是国内少有的具备规模化交付能力的整机厂商；整个具身智能赛道，今年上半年国内累计融资规模达935亿元，较去年同期提升5倍，融资事件数量同比增长137%。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">宇树的上市同时也是一记清晰的“产业信号”：同期，梅卡曼德机器人已获港股IPO备案，市场传闻自变量机器人已秘密递表，智平方计划明年在港上市，蚂蚁灵波也启动了首轮15亿元融资。当整机厂、机器人企业、AI大脑公司、上游零部件公司开始按各自节奏走向公开市场，具身智能的资本市场叙事，从“PPT讲故事”切换到了“账本看交付”。</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#0891b2;">值得关注：</strong>宇树以219倍市盈率登陆科创板，反映的是市场对人形机器人赛道高成长性的“溢价定价”。但高溢价的另一面，是持续兑现的硬约束：接下来几年，公司要在产能爬坡、产品稳定性、订单结构、海外市场之间反复证明自己。可以确定的是，“具身智能”已经不再是少数人的赌注，而是正在被资本市场用真金白银的估值方法论接受下来的一类新资产。</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">五件事在同一个坐标点上交汇。Cerebras把推理加速器做到了GPU方案的30倍，意味着AI的成本曲线正在被进一步压扁；Cursor Origin用“堆叠式PR”和“Agent一等公民”的设计，把软件工程基础设施带进了下一个时代；OpenAI在模型端按下暂停键、在用户端推出青少年版，让“安全”成为一笔真金白银的成本；灵巧手跌破万元、人形机器人产业链形成正反馈闭环，具身智能第一次有了真正意义上的“成本拐点”；宇树以219倍市盈率敲钟，给“具身智能”的资本市场叙事定了调。它们的共同点非常一致：AI的价值，正在从“参数”和“对话”这些软的东西，流向“算力、托管、安全、零部件、资本”这些硬的东西——AI在变硬，而变硬，往往正是落地的前夜。</p>
+</body>
+</html>
+

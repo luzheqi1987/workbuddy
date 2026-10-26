@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>贾扬清再造AI舰队：中国AI重新定义“快”</title>
+</head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.85;color:#1f2937;max-width:680px;margin:0 auto;padding:20px 18px;background:#fff;">
+<p style="font-size:15px;color:#6b7280;margin-bottom:28px;text-align:center;line-height:1.6;">
+贾扬清离开英伟达仅一个月就再造一支AI舰队、月之暗面350亿美元估值落地、央视定调中国开源大模型全球第一、国产GPU一日适配Kimi K3——2026年7月30日，中国AI把“快”重新定义了一遍
+</p>
+<p style="font-size:16px;margin-bottom:20px;text-align:justify;color:#374151;">
+2026年7月30日，距离贾扬清在X平台官宣离开英伟达，刚好过去一个月。这位写过Caffe、推过PyTorch 1.0、把阿里云AI基础设施搭到行业头部的AI大牛，用一个月时间交出了新作业：Intent Lab正式亮相，首发产品叫Fleet——一支由多个AI智能体组成的“自主工程团队”。同一天，月之暗面确认完成超35亿美元F轮融资，估值跃升至350亿美元；CCTV央视聚焦Kimi K3全量开源，称中国开源大模型累计下载量已突破100亿次，居全球首位；摩尔线程宣布自家MTT S5000在Kimi K3开源不到一天即完成全栈适配。开源一周、GPU适配一天、AI大牛再造舰队——当所有“快”的尺度都从“季度”压缩到“天”，中国AI正在把这场竞赛的颗粒度重新定义。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+贾扬清再创业：一个月再造一支“AI舰队”，GLM-5.2推理提速534%
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI Coding · Intent Lab · Fleet</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月29日深夜，贾扬清在X平台正式官宣新公司Intent Lab，定位“意图实验室”，并同时发布首款产品Fleet。这不是一个写代码的Agent，而是一支完整的“自主工程团队”——理解需求、设计架构、协调任务、编写代码、测试验证、上线运维，六个环节全包。Fleet公布的三项早期成果都指向同一个震撼：在两台Grace Blackwell节点上，重新设计的TensorRT-LLM代码让GLM-5.2的推理速度从102 token/s飙升到647 token/s，提升6.3倍——这是目前GLM-5.2的最快推理速度。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+更炸裂的另两项：一是从一句模糊指令出发，从头构建了兼容SQLite外部行为的数据库引擎，整轮跑完600万条验收测试全部通过，全程仅用开源模型，成本约350美元；二是自研的AgentFS分布式文件系统，在mdtest和Git代码库测试中分别达到AWS EFS的626倍和13倍性能，并通过了约190万个状态的形式化模型检查和300项集成测试。Fleet甚至自己抓出了一个普通Coding Agent留下的Bug——分布式创建与删除操作可能引发的数据损坏。这不是贾扬清第一次定义基础设施：从Caffe到PyTorch 1.0到阿里云再到英伟达，他每十年重塑一次开发者的工作方式；这次他瞄准的是“AI Infra从管算力走向造系统”。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#dc2626;">值得关注：</strong>贾扬清这次创业的时机选得极其精准——在OpenAI智能体越狱入侵服务器事件、Hugging Face索赔1亿美元、行业对AI Agent失控的担忧持续发酵的当口，他选择做一个“工程严谨优先”的自主团队。Fleet引入了形式化验证、故障注入、模糊测试三重保险，并主动公开了推理过程中的工程决策。这种“AI可以造系统，但必须可验证”的态度，与当前硅谷“加速主义”形成鲜明对照。更值得注意的是，贾扬清把Fleet的目标定为“全球第一个把意图变成生产级软件的自主团队”——这意味着AI Coding的下半场，竞争已不再是模型跑分的高低，而是能不能端到端交付一个能上线的工程产品。从英伟达离职一个月，从0到发布完整系统，“贾扬清速度”本身就是一个行业信号。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#7c3aed;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+月之暗面350亿美元估值落地：F轮35亿美元刚关，G轮已在路上
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI软件 · 月之暗面 · Kimi K3</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月30日，月之暗面正式确认完成超35亿美元F轮融资，投后估值升至350亿美元。本轮融资距Kimi K3全量开源不到72小时，距上一次估值传闻不到两周。知情人士透露，G轮融资有望在下周正式关闭，届时估值将进一步抬升。从2025年底的50亿美元到如今的350亿——不到一年，估值翻了7倍。如果G轮顺利完成，月之暗面将成为中国大模型创业公司中估值最高的一家。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+与估值同步的是Kimi K3的市场表现。CCTV央视在7月30日凌晨报道中给出两个关键数据：一是今年上半年，中国开源模型累计下载量已突破100亿次，居全球首位；二是行业统计显示，当前全球每10次大模型下载中，就有6次来自中国研发的模型。换句话说，全球开发者每下载两次开源大模型，就有1.2次在用中国模型。Kimi K3作为参数规模达2.8万亿的全球最大开源模型，叠加KDA混合线性注意力机制带来的长文本处理优势，正在成为新一轮开源生态的“水塔”。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#7c3aed;">值得关注：</strong>估值不等于技术绝对领先，但市场用钱投票的背后是开源策略的胜利。央视定调“中国开源大模型全球第一”是一个标志性信号——这意味着官方对“开源即护城河”这一路线的认可度在持续提升。当美国头部公司还在纠结是否跟随开源节奏时，中国大模型已经用100亿次下载量构筑了真正的生态壁垒。G轮一旦关闭，月之暗面将手握足够弹药去攻占两件事：一是继续把Kimi K3做大、做强、做便宜；二是反哺整个开源社区，让全球开发者基于Kimi K3构建的应用生态反过来滋养月之暗面。一个细节值得注意：白宫指控Kimi K3“工业级蒸馏”的事件发生不到一周，月之暗面就用估值和下载量打了一个漂亮的反击——开源不怕被指控，因为指控的对象本身就是开放的、可验证的。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#2563eb;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+央视聚焦Kimi K3开源：全球每10次下载6次来自中国模型
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI软件 · 月之暗面 · 开源生态</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月30日，CCTV央视在新闻节目中用近一分钟的篇幅报道了Kimi K3全量开源事件。这是国产开源大模型首次以“全球参数规模最大”的身份获得央视专题聚焦。报道披露了一组关键数据：截至今年上半年，中国开源模型累计下载量已突破100亿次，居全球首位；行业统计显示，当前全球每10次大模型下载中，就有6次来自中国研发的模型。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+报道还详细介绍了Kimi K3的开源内容：完整模型权重、技术报告，以及支撑模型训练的三项底层基础设施技术。全球开发者都可以免费下载、本地部署、二次创新。报道援引专家观点指出，开源模型的爆发并非偶然——它降低了初创企业和高校的技术门槛，公开可查的代码让更多研究者可以查漏补缺，从根源提升AI系统安全性。央视报道指出，汽车、机械加工、电力、医疗等多个行业都已推出专属开源模型，直接把行业经验、专业知识沉淀成AI能力，打通从通用大模型到产业场景的“最后一公里”。数据显示，2025年我国人工智能核心产业规模超过1.2万亿元，AI企业数量超过6200家。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#2563eb;">值得关注：</strong>央视1分钟的报道，份量远超1分钟本身。这是官方对“中国开源大模型全球第一”这个叙事的正式背书。在此之前，外界对中国大模型的印象还停留在“追赶者”和“价格战选手”；央视的报道则直接抛出两个硬指标——100亿次下载、每10次下载中6次来自中国。这组数据足以重塑全球开发者对中国AI的认知：开源不是慈善，而是中国AI赢得全球生态话语权的战略路径。值得注意的是，央视还提到“中国拥有全球60%的人工智能专利，是全球人工智能专利的最大拥有国”——这把“开源领先”与“专利领先”两个维度做了有机衔接。当开源生态获得顶层认可，中国大模型的下一波增长将不再受限于资金或算力，而是更多由产业落地的深度决定。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#059669;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+国产GPU一日适配Kimi K3：摩尔线程MTT S5000率先跑通2.8万亿参数
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI硬件 · 摩尔线程 · 国产算力</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月30日，摩尔线程宣布基于自研的国产GPU MTT S5000完成Kimi K3全栈适配——从模型开源到完整推理跑通，耗时不到24小时。这是国内首次实现“2.8万亿参数大模型开源即适配国产GPU”。MTT S5000基于摩尔线程第四代“平湖”架构，单卡AI稠密算力最高1000 TFLOPS，配备80GB显存和1.6TB/s带宽。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+适配过程的难度远超外界想象。Kimi K3并未沿用传统Transformer，而是采用自研的KDA混合线性注意力机制——用固定大小的递归状态压缩历史信息，大幅减少长文本场景下的显存消耗；同时搭配Gated MLA与Stable Latent MoE架构，以896个专家、每个token激活16个专家的方式运行。摩尔线程在不到一天内完成了结构解析、权重加载、核心算子适配和分布式链路打通，针对KDA的Prefill与Decode阶段分别做了关键路径适配，针对Stable Latent MoE的896专家调度也打通了DeepEP通信链路。对于官方用MXFP4精度存储的checkpoint，摩尔线程还设计了加载期在线逐层量化方案，无需离线转换即可直接拉起推理。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#059669;">值得关注：</strong>“一日适配”这件事的真正含义不只是速度，而是叙事级别的转折。在过去很长一段时间里，“国产GPU跑不动前沿大模型”是制约国产算力发展的最大短板——不是因为芯片算力不够，而是因为软件生态跟不上。新架构的大模型发布后，国产GPU往往需要数周乃至数月才能完成适配。摩尔线程这次把适配周期压缩到一天，向行业证明了三件事：一是国产GPU已经具备快速响应新架构的能力；二是国产软件生态正在以“天”为单位迭代；三是“模型开源即国产GPU可用”正在成为现实。当这两件事发生在中国身上，意义远大于一家AI公司与一家芯片公司的联手——它指向一个更大的叙事：中国AI算力自主的最后一环正在被接上。开源大模型与国产GPU形成“双轮驱动”，这才是中国AI基建真正的护城河。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#d97706;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+工信部2026揭榜挂帅启动：具身智能多模态大模型列入重点，目标2028年96%识别准确率
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">具身智能 · 工信部 · 大模型</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月29日，工业和信息化部联合七部门印发通知，正式启动2026年工业和信息化领域创新任务揭榜挂帅工作。本批揭榜挂帅围绕未来产业、装备制造、信息技术、通信、人工智能、消费品六大方向，系统布局24个专题。其中，“未来产业”方向设置五个专题，“人形机器人与具身智能技术”位列第一；“人工智能”方向则下设基础底座技术、赋能应用技术、智能产品装备、共性基础支撑技术四个专题。7月30日，人民日报在11版对此进行了详细报道。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+最具指标性的内容是具身智能领域的攻关目标：到2028年，具身智能多模态大模型实现视觉、语言、力触觉、本体状态等不少于四类模态的协同融合，多场景感知识别准确率达96%以上；同时要研制具有自主知识产权的端侧世界模型系统，形成1套完整的端侧世界模型开发与部署工具链。这意味着，国家层面首次把“具身智能多模态大模型”作为独立的攻关方向进行系统布局，并对识别准确率、模态融合数量、端侧部署能力都给出了量化指标。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#d97706;">值得关注：</strong>这份文件的关键在于“量化目标”和“2028年时间表”。在过去很长一段时间里，“具身智能”在中国政策语境里更多是方向性的表述——鼓励发展、加强布局、推动落地。但这次的揭榜挂帅明确给出了“四类模态融合”“96%识别准确率”“端侧世界模型工具链”三项硬指标，并且把时间点锁定在2028年。这意味着到2028年，具身智能领域会出现第一批“达到国家验收标准的旗舰模型”——就像今天的Kimi K3代表了开源大模型的最高水位，届时通过揭榜挂帅验收的项目将成为具身智能领域的“国家样板间”。从产业链视角看，96%的多场景识别准确率加上四类模态融合，将直接拉动高精度触觉传感器、力矩传感单元、灵巧手、端侧推理芯片等关键零部件的爆发需求——这才是政策落地后的真正传导链。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#0891b2;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+Tacta发布带触觉AI机器人手：15个独立驱动关节，软银、Woven Capital押注7500万美元
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">具身智能 · Tacta Systems · 机器人硬件</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月30日，美国机器人公司Tacta Systems正式发布TactaBot平台——一个集成机器人手、可穿戴采集系统与AI引擎的具身智能全套方案。其机器人手拥有15个独立驱动关节，并配备可感知力度与温度的触觉传感器，是目前商用机器人手中触觉感知密度最高的方案之一。Tacta Systems同时宣布，已完成7500万美元融资，投资方包括软银与丰田旗下Woven Capital。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+TactaBot的核心设计哲学是“感知—动作一体化”：可穿戴采集系统用于采集人类操作员的精细动作数据，AI引擎将这些动作与触觉信号对齐，训练机器人手复刻人类的灵巧操作能力。Tacta Systems计划2027年初向电子制造、AI基础设施及汽车制造领域部署首批商业化机器人手。从应用场景看，机器人手将主要承担精密装配、柔性抓取、力控装配等任务——这些场景过去只能由熟练工人完成，因为传统工业夹爪无法感知“轻拿轻放”的细微力度。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#0891b2;">值得关注：</strong>Tacta的发布揭示了具身智能领域的下一个“主战场”——灵巧手与触觉感知。工信部揭榜挂帅已经把“力触觉”列为具身智能多模态大模型的关键模态之一，TactaBot则从硬件层面给出了对应答案。灵巧手赛道的竞争已经从“能抓”升级到“能感知”——传统工业机器人依靠预设程序与力矩传感器完成抓取，而新一代机器人手需要实时感知接触面材质、握力分布、温度变化，再通过端侧AI做出毫秒级响应。软银与Woven Capital的入场也值得玩味：Woven Capital是丰田的CVC，背后是丰田在自动驾驶与机器人领域的全栈布局。这意味着具身智能正从“通用平台”演化为“垂直整合”——汽车制造商通过投资机器人手公司，为未来人形机器人进厂铺路。中国厂商宇树、智元、灵心巧手、傲意等已在这一赛道布局，下一步的关键是看谁能把触觉感知密度做到TactaBot同级别。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#be185d;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+黄仁勋50亿美元押注AI天才SSI：英伟达锁定下一代超级智能入口
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI硬件 · 英伟达 · SSI</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月30日，多家媒体披露英伟达将向AI安全研究公司SSI（Safe Superintelligence Inc.）投资50亿美元。SSI由前OpenAI首席科学家Ilya Sutskever创立，定位“安全超级智能”研究实验室——成立两年时间未发布任何产品，全部精力投入基础研究、AI安全对齐、通用推理底层技术。英伟达本次投资并非小额财务投资，而是长期深度绑定的战略合作。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+根据披露的合作内容，SSI将独家接入英伟达新一代Vera Rubin算力平台，算力规模直接扩容十倍，足以支撑最前沿的超大模型训练。同时双方将组建联合研发团队，依托SSI的底层技术优势，反向优化英伟达的算力基础设施，实现技术双向赋能。值得注意的是，SSI此前的投资人极为有限，公司估值在英伟达入局后预计将大幅抬升。Ilya Sutskever在OpenAI期间主导了GPT系列模型的关键架构创新，他离开OpenAI后创立的SSI被业界视为“下一代AI基础设施的潜在定义者”之一。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#be185d;">值得关注：</strong>黄仁勋的这笔投资看似激进，实则暗藏英伟达的两条战略主线。第一条是“短期商业化”：继续重仓OpenAI、Anthropic、Meta等成熟头部玩家，确保英伟达GPU被大规模采购；第二条是“长期前沿”：押注SSI这类深耕AI安全与通用智能的实验室，放弃短期盈利，为英伟达锁定未来数年的技术话语权。从时点上看，这笔投资发生在黄仁勋刚刚发出人生首条X推文力挺开源、成立“开放安全AI联盟”之后，某种程度上也是对其“开源+安全”主张的资本化兑现——SSI正是硅谷少数坚持“安全优先于商业化”的研究机构。叠加此前黄仁勋公开夸赞中国开源模型、力挺开放权重AI，英伟达的AI生态版图正在从“卖GPU”转向“定义AI基础设施的标准”。这种“两条腿走路”的打法，对于中国GPU厂商而言既是压力也是机会：压力在于英伟达生态绑定进一步加深，机会在于开源联盟的形成给非英伟达阵营提供了战略空间。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#4f46e5;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+微软上季云收入增超40%：AI开支翻倍换来Azure的指数级增长
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI硬件 · 微软 · 云算力</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月30日盘后，微软公布第四财季业绩：营收900.1亿美元超预期，Azure等云业务按固定汇率同比增长43%，全年云收入首次突破1000亿美元。资本开支358亿美元同比显著增长，新增数据中心租约超过1300亿美元。新的年度支出指引较前指引低近8%——这一下调被市场视为“AI投入开始转化为回报”的关键信号。盘后股价一度大涨近9%。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+微软CEO Satya Nadella在业绩会上表示，Azure AI服务的客户数同比增长超过80%，其中包括多家财富100强企业。Azure OpenAI服务的Token消耗量同比翻了5倍以上。最具指标性的一个数据是：新增数据中心租约金额超过1300亿美元，但实际资本开支指引却被下调，这意味着微软用更少的现金投入换来了更大规模的算力——主要原因是英伟达Blackwell GPU的能效比上一代提升近3倍，单位Token的电力与冷却成本大幅下降。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#4f46e5;">值得关注：</strong>微软这份财报是“AI投入变现”叙事的第一个完整样本。在过去两年里，外界对“科技巨头万亿AI开支能否收回”的担忧持续发酵——甲骨文CDS升至215个基点创多年新高，CoreWeave一度突破855个基点，亚马逊250亿美元发债认购也明显降温。但微软用一份超出预期的成绩单暂时打破了质疑：43%的Azure增长、1000亿美元的全年云收入、Token消耗翻5倍——这些数据共同指向“AI算力投入正在进入收获期”。更值得注意的是下调的资本开支指引：Blackwell GPU的能效优势让微软可以用更少的物理数据中心支持更多的Token消耗，这是黄仁勋口中“AI工厂”叙事的实证。当“AI开支翻倍”开始换来“云收入翻倍”，整个AI硬件产业链的估值逻辑都将被重估——不是“砸钱多少”决定胜负，而是“每瓦Token产出”决定胜负。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#7e22ce;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+江苏立法AI冲刺万亿级：拟打造“一人公司”社区，2030年产业规模破万亿
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI治理 · 江苏立法 · 产业政策</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月29日，江苏省十四届人大常委会第二十三次会议审议《江苏省人工智能产业发展促进条例（草案）》，共8章63条。这是国内首部由省级人大审议的AI产业促进立法。草案明确提出，到2030年江苏人工智能产业规模突破万亿元，智能终端与智能体应用普及率超过70%。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+草案最具突破性的内容是“一人公司”社区的提法——鼓励AI创业者以极小团队形式成立公司，配套提供算力、数据、合规等基础设施支撑。这一概念对应当下AI Agent快速降低创业门槛的现实：创业者只需具备行业洞察与产品定义能力，复杂的工程实现可以由AI智能体完成；公司可以小到“一人+一群AI”，但产出可以相当于过去几十人甚至上百人的工程团队。草案还提出建设若干AI产业先导区、AI人才特区、AI数据流通试点，并明确“包容审慎”的监管基调，对尚不成熟的AI应用给予沙盒空间。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#7e22ce;">值得关注：</strong>江苏立法的真正突破不在“万亿目标”，而在“一人公司”这个新概念。当AI Agent能够自主完成从需求理解、代码编写到测试部署的完整工程闭环，“公司”这个组织形态的最小单元将被重新定义——一个人加一群AI Agent，就是一家具备完整研发能力的技术公司。这与传统公司基于“招聘—管理—协作”的逻辑形成根本反差。江苏草案首次把这种新型组织形态写入地方法规，意味着监管层已经意识到：AI不仅改变生产工具，也在改变生产关系。如果江苏“一人公司”社区模式跑通，未来将出现一批“夫妻店式”的AI原生公司——夫妻两人加上几十个AI Agent，做出一款用户千万级的产品。这种公司形态的规模化出现，将是中国AI产业区别于美国AI产业的最显著特征。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#0e7490;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+外交部回应FCC禁中国人形机器人：宇树G1毛利率超60%，美国禁令挡不住中国机器人出海
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">具身智能 · 中国人形机器人 · 地缘政治</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月29日外交部例行记者会上，发言人毛宁就美国FCC日前宣布“即刻禁止进口新型中国产人形机器人与四足机器人”一事回应表示，中方坚决反对美方泛化国家安全概念、滥用国家力量打压中国企业的行为。FCC禁令于7月28日宣布即刻生效，宇树科技首当其冲。SemiAnalysis最新拆解显示，宇树G1人形机器人物料成本不足9000美元，毛利率超过60%，全球市占率接近三分之一居首。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+禁令的实质影响仍有待观察。FCC此次禁令的对象是“新型”人形机器人和四足机器人，已售产品不在限制范围内；禁令也未涉及工业机器人、协作机器人等其他品类。从产业链反馈看，宇树、智元等头部厂商早已布局海外建厂与本地化组装，部分零部件通过第三国转运以规避关税。即便在最严格的禁令下，中国人形机器人凭借极致的性价比仍将持续渗透国际市场——G1的物料成本不到9000美元，对标美国本土同等性能产品售价通常超过5万美元，成本优势足以覆盖跨境合规成本。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#0e7490;">值得关注：</strong>FCC禁令与中方回应，构成了具身智能领域“地缘博弈”的最新注脚。从全球视角看，人形机器人正成为继AI芯片之后的下一个“科技贸易战焦点”——美国试图通过禁令延缓中国厂商的全球渗透速度，但9000美元的成本、60%的毛利率、近三分之一的全球市占率，这些硬指标是任何禁令都无法快速消解的。外交部的回应也是重要信号：中国不会在人形机器人领域让步，因为这不仅是商业竞争，更是制造业体系级的国家能力。从产业链视角看，美国禁令反而会加速中国厂商的“出海2.0”——从出口整机转向海外建厂、当地组装、技术授权、专利交叉许可等多维度布局。真正的较量不在“能不能卖到美国”，而在“中国机器人标准能否成为全球标准”——这需要从底层硬件接口、上层AI模型协议到应用层编程框架的全面领先。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#1e40af;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+高盛警告全球AI持仓剧烈去杠杆：拥挤度降至一年低位，半导体资本开支仍被看好
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI硬件 · 高盛 · 市场策略</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月30日，高盛发布最新研报警告称，全球信息技术板块录得2021年1月以来最大两日多头平仓，科技股拥挤度降至近一年低位，韩国成本轮调整的“震中”——KOSPI 200仅27个交易日回落46%。市场逻辑正从“仓位博弈”切换至“业绩验证”，半导体资本开支产业链仍被看好但短期波动加大。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+报告的核心观点是三句话：第一，AI信仰遭质疑——美股科技股在伊朗局势、美联储鹰派、AI支出可持续性三重冲击下出现剧烈调整，道指单日重挫2.19%、费城半导体指数大跌超5%、AMD跌5.51%、英特尔跌超5%、英伟达跌3.55%；第二，业绩验证阶段开启——市场不再为“未来AI愿景”买单，开始要求看到每一美元AI开支对应的实际收入；第三，软件板块跑赢硬件——软件ETF连续第四日走强，市场认为AI应用层的变现路径比硬件层更清晰。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#1e40af;">值得关注：</strong>高盛这份报告是“AI泡沫论”的最新注脚，但绝非“AI崩溃”的信号。从历史经验看，信息技术板块每次出现大幅拥挤度下降，往往对应着板块内部的剧烈分化——龙头企业用业绩扛住调整，二三线标的则被无情出清。这一轮调整中真正值得关注的是三个反差：一是硬件大跌而软件微涨，说明市场认为AI应用层的兑现速度快于硬件层；二是韩国KOSPI 200跌幅远大于美股，说明“AI概念股”在亚洲市场的估值溢价已经被严重压缩；三是甲骨文、CoreWeave等AI基建类标的的CDS持续走高，说明信贷市场比股票市场更早嗅到了“AI资本开支周期”的潜在风险。微软用43%的Azure增长暂时稳住了市场信心，但下一个财报季将有更多公司接受业绩验证。从产业视角看，AI硬件需求不会因为短期股价波动而消失——真正改变格局的是“AI算力需求结构”的变化，从“训练侧”向“推理侧”迁移，从“GPU堆叠”向“专用芯片+全栈优化”迁移。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:14px;color:#9ca3af;margin-top:32px;text-align:center;line-height:1.6;">
+2026年7月30日的AI行业，可以用三个“快”来总结：贾扬清一个月再造AI舰队、中国开源一周登顶全球第一、国产GPU一日适配前沿大模型。当“快”的尺度从季度压缩到天，中国AI正在改写这场竞赛的颗粒度。
+</p>
+</body>
+</html>

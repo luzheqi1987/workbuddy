@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>万亿模型跑通国产卡，芯片巨头排队绑模型，白宫开始指控抄袭</title>
+</head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.85;color:#1f2937;max-width:680px;margin:0 auto;padding:20px 18px;background:#fff;">
+
+<p style="font-size:15px;color:#6b7280;margin-bottom:28px;text-align:center;line-height:1.6;">
+当国产卡跑通万亿模型，大国开始互相指控，芯片与模型的绑定正在加速成型
+</p>
+
+<p style="font-size:16px;margin-bottom:20px;text-align:justify;color:#374151;">
+今天AI圈的关键词是<strong style="color:#111827;">绑定</strong>——美团用五万张国产卡跑通了万亿参数大模型，白宫正式指控月之暗面的Kimi K3通过"工业级蒸馏"抄袭了Anthropic的模型；而与此同时，AMD砸50亿美元投资Anthropic锁定芯片订单，三星洽谈10亿欧元入局Mistral，存储芯片价格眼看再涨25%。当算力供给成为生命线，芯片厂商、模型公司和主权国家正在以前所未有的速度互相绑定。
+</p>
+
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+美团LongCat-2.0开源：五万张国产卡跑通万亿参数模型，专为Agentic Coding而生
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI Coding · 美团</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+美团正式开源LongCat-2.0——业界首个在五万卡国产算力集群上完成全流程训练与推理的万亿参数模型。总参数1.6万亿，平均激活约48B，原生支持100万Token超长上下文，架构创新引入LongCat稀疏注意力（LSA）和N-gram Embedding，专为真实Agentic Coding任务设计。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+更关键的是国产芯片适配：针对显存与带宽受限的国产算力芯片，团队从模型架构、芯片适配到部署策略深度协同优化——通过Super Kernel减少算子启动开销、Weight Prefetch隐藏I/O延迟、PD分离部署兼顾首Token延迟与生成速度，实现百万上下文在国产芯片上的流畅推理。同步开放BF16、FP8及INT8多精度版本，覆盖不同算力平台部署需求。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#dc2626;">值得关注：</strong>这是国产算力从"能用"到"好用"的标志性事件。当万亿参数模型的训练和推理全流程跑通在国产卡上，意味着"缺了英伟达就做不了大模型"的叙事正在被打破。美团选择围绕Agentic Coding这个最具落地价值的场景做深度优化，而非盲目刷分——AI Coding的竞争正在从"谁的模型分数高"转向"谁的工程闭环跑得通"。
+</p>
+
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#7c3aed;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+白宫指控Kimi K3抄袭：中美AI竞争从比分数升级为互相指控
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI地缘政治 · White House</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月22日，白宫科技政策办公室主任迈克尔·克拉齐奥斯公开发文，指控月之暗面通过"大规模隐蔽工业蒸馏"窃取Anthropic的Fable模型来开发Kimi K3。他声称月之暗面搭建了专门的内部平台，通过多种访问方式规避检测，还通过泰国获取了受出口管制的英伟达GB300芯片。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+证据之一颇为离奇：Kimi K3在对话中多次"自报家门"称自己是Claude。统计分析师发现这种自识别出现的频率远超随机概率。但也有研究者指出，公开互联网上大量Claude对话数据可能被任何模型"吞下"，导致自识别混淆，这并非抄袭的铁证。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#7c3aed;">值得关注：</strong>这是美国高级官员首次直接点名指控某家中国公司抄袭某个特定美国模型。无论指控是否成立，中美AI竞争的叙事框架已经改变——从"比谁的分数高"变成了"指责对方偷东西"。美国财政部长同期暗示可能对涉及蒸馏的中国公司实施制裁。如果规则从"管控芯片"延伸到"管控算力租赁"，监管网络将大幅收紧。
+</p>
+
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#2563eb;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+黄仁勋逆风发声：美国无需害怕中国开源AI模型
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI地缘政治 · NVIDIA</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+就在白宫和部分AI企业推动限制中国开源模型之际，英伟达CEO黄仁勋在接受Axios专访时给出了截然不同的判断："这些中国模型非常优秀，优秀的开源模型就应该被使用。"他明确表示，不存在中国企业把美国企业挤出市场的可能性——"概率是零"。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+黄仁勋的逻辑很直白：更便宜、更开放的模型会让更多人首次接触AI，从而扩大整个市场规模，最终带动更多芯片和数据中心需求。"市场第一次误解了DeepSeek的影响，这次又误解了Kimi的影响。"他还警告，如果世界只剩下一个模型、一个攻击点，全球会更加脆弱。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#2563eb;">值得关注：</strong>黄仁勋的表态与其客户OpenAI和Anthropic在华盛顿力推的游说方向背道而驰。作为全球最大AI芯片供应商，他的立场代表着一种商业理性：开源做大蛋糕，闭源吃高端市场，芯片卖给所有人。但这也揭示了一个深层矛盾——当芯片厂商的利益与模型厂商的利益不再一致时，"封禁中国AI"的联盟内部就会出现裂缝。
+</p>
+
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#ea580c;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+月之暗面冲刺500亿美元估值：三年估值飙百倍，最快6个月赴港上市
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI商业 · Moonshot AI</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月22日，月之暗面被曝计划于8月启动上市前最后一轮融资，目标投前估值500亿美元（约合人民币3386亿元），最快6个月内登陆港股。这家成立于2023年4月的公司，估值从天使轮的3亿美元飙升至Pre-IPO轮目标的500亿美元——三年不到，百倍跨越。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+催化剂是7月17日发布的Kimi K3——2.8万亿参数、全球最大开源模型，在Arena代码榜单上超越Claude Fable 5登顶第一。发布48小时后用户调用请求量指数级增长，公司甚至暂停了C端新用户订阅以保障存量服务。截至6月，月之暗面年度经常性收入已达3亿美元，API收入占比超七成，已进入B端规模化变现阶段。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#ea580c;">值得关注：</strong>500亿美元的估值意味着市场对中国大模型公司的商业化前景给出了前所未有的乐观定价。但与此同时，白宫的抄袭指控犹如一把悬在头顶的剑——如果制裁落地，这条上市之路可能戛然而止。技术突破、资本追捧与地缘风险，三股力量正在同一家公司身上激烈拉扯。
+</p>
+
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#059669;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+AMD豪掷50亿美元投资Anthropic：芯片巨头与模型巨头的深度绑定
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI硬件 · AMD × Anthropic</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月22日，AMD与Anthropic宣布达成战略合作：Anthropic将部署至多2吉瓦的AMD Instinct MI450系列GPU，首个吉瓦自2027年上半年开始部署，采用AMD Helios机架级解决方案。此外，AMD承诺向Anthropic进行最高50亿美元的战略股权投资——这是AMD首次注资这家AI公司。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+双方还将展开多年工程合作：AMD使用Claude优化Instinct GPU工作负载并加速ROCm软件开发，AMD工程团队全面采用Claude。苏姿丰表示："我们一直希望深度参与搭建Anthropic的算力基础设施。"
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#059669;">值得关注：</strong>芯片厂商直接投资模型公司——这种"以股换订单"的模式正在成为行业新常态。此前AMD已与Meta达成类似安排，美光也投资了Anthropic。当算力供给成为模型公司的生命线，芯片厂商不再只是供应商，而是通过资本绑定成为利益共同体。英伟达的单极格局正在被一个个深度绑定的"芯片+模型"联盟瓦解。
+</p>
+
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#0891b2;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+三星洽投Mistral 10亿欧元：存储巨头押注"主权AI"
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI硬件 · Samsung × Mistral</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+三星电子正就向法国AI初创公司Mistral投资约10亿欧元展开谈判，该轮融资有望将Mistral估值推至约200亿欧元。此前三星已通过风投部门参股Mistral，此轮加码的驱动力来自两方面：AI存储芯片合作需求，以及特朗普政府限制外国获取Anthropic最新模型后欧洲对"主权AI"的迫切需求。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+同一周，Mistral还与微软扩大合作，微软承诺投入数十亿美元建设Mistral在欧洲的算力基础设施。成立仅三年的Mistral已成为欧洲估值最高的AI初创公司，CEO透露年底前年度经常性收入有望突破10亿美元。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#0891b2;">值得关注：</strong>美国对Anthropic的出口管制意外地成为欧洲开源AI的最大红利。当"主权AI"成为各国刚需，Mistral凭借"可自主定制、不被远程关停"的开放模型定位，正在成为美国科技巨头的"替代选择"。三星的入局则说明，芯片厂商正在通过投资模型公司来锁定存储芯片的长期需求——AI产业链的纵向整合已经从"芯片绑定模型"延伸到"存储绑定模型"。
+</p>
+
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#be123c;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+存储芯片超级周期延续：摩根士丹利看涨25%，AI算力成本压力加剧
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI硬件 · 存储芯片</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+摩根士丹利最新研报指出，AI数据中心的存储芯片供应短缺仍在加剧，预计存储芯片的"超级周期"将延续到2028年，而价格在未来一个季度可能继续上涨25%。这一判断引燃了市场对半导体板块的做多情绪。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+从行业趋势看，AI大模型训练和推理对高带宽存储（HBM）的需求持续增长，而产能扩张周期较长，供需错配短期内难以缓解。存储涨价意味着下游AI服务器厂商成本承压，可能加速国产存储替代进程。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#be123c;">值得关注：</strong>AI的"算力通胀"正在从GPU蔓延到存储芯片。当GPU涨价、存储涨价、电力涨价同时发生，AI大模型的训练和推理成本正在进入结构性上升通道。对于下游应用企业来说，这意味着"算力越来越便宜"的乐观假设需要修正。谁能率先在国产存储替代上取得突破，谁就能在这轮成本竞赛中占据优势。
+</p>
+
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#0d9488;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+OpenAI双线出击：推出Presence企业平台，豪掷300亿美元建超级数据中心
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI企业应用 · OpenAI</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+OpenAI正在同步加码基础设施和企业软件两大战线。7月22日，OpenAI宣布在美国佐治亚州建设一座总投资超过300亿美元、规划电力容量3.2吉瓦的超大规模数据中心——相当于约240万户美国家庭的用电需求，首批电力2028年上线。同时，OpenAI已将未来云基础设施支出预测上调至7500亿美元。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+在企业端，OpenAI正式推出AI代理平台Presence，将AI模型与企业内部数据、政策及业务流程深度整合，面向客服、销售、IT支持等场景提供自动化解决方案。CEO奥特曼计划下周赴华盛顿，向特朗普政府和国会介绍下一代AI模型。OpenAI已率先将Presence用于自身英语客服热线。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#0d9488;">值得关注：</strong>随着基础模型趋于同质化、价格持续下探，单纯卖模型API的商业模式正在见顶。Presence标志着OpenAI从"卖模型"转向"卖企业软件解决方案"——更高客户黏性、更稳定的长期收入。而7500亿美元的云支出预测则说明，OpenAI押注的不是当前的需求，而是未来AI Agent全面接管企业业务流程后的算力爆炸。
+</p>
+
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#9333ea;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+高德ABot五连发：全球首个全栈具身智能体系，17项SOTA
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">具身智能 · 高德</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月22日，阿里巴巴旗下高德宣布ABot具身智能体系完成全栈升级，一次性发布ABot-N1、ABot-M0.5、ABot-ER、ABot-AgentOS、ABot-C0五款模型，在17项权威基准中拿下SOTA。作为全球首个全栈具身技术体系，ABot将世界模型、基座模型与具身Agent架构耦合为一个高度协同的系统，五款模型分别对应机器人的"脚、手、脑、中枢和运动神经"。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+其中，ABot-N1导航基座模型采用快慢双系统架构，首创像素级思维链，室外导航成功率达92.9%；ABot-M0.5操作基座模型引入"梦境自愈"训练机制，在RoboCasa-365测试中复杂任务领先前代SOTA 20.4%；ABot-AgentOS将规划、调用、执行与验证解耦，自带跨任务、跨时间的多模态终身记忆，让机器人从"做完即忘"走向"越用越聪明"。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#9333ea;">值得关注：</strong>高德ABot的核心突破不在于单点模型性能，而在于体系化——从导航到操作、从感知到记忆、从仿真到真机，全栈打通自进化闭环。过去具身智能的竞赛是"谁的模型分数高"，现在正在变成"谁的系统跑得通"。这家从地图业务出发的公司，正在用"空间智能"的差异化路径，在具身智能赛道上撕开一条新的战线。
+</p>
+
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#0369a1;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+英伟达联合Hugging Face：为开源机器人社区引入GR00T 1.7，连接1900万开发者
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">具身智能 · NVIDIA × Hugging Face</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+英伟达与Hugging Face宣布扩大机器人合作，将NVIDIA Isaac GR00T 1.7（首个开放且具备商业可行性的机器人基础模型）、Isaac Teleop（开源机器人数据采集框架）和即将推出的Cosmos 3（物理AI前沿世界模型）直接接入Hugging Face的LeRobot开源机器人生态。这一整合连接了英伟达的300万机器人开发者与Hugging Face的1600万AI构建者。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+Isaac GR00T 1.7是一款面向人形机器人的推理视觉语言动作（VLA）模型，可通过LeRobot工作流进行后训练和部署，帮助开发者将模型适配到不同机器人形态和任务。Isaac Teleop则帮助开发者通过XR头显、动捕手套等设备采集高质量人类示范数据，直接输出LeRobot可读取的标准化格式。配套的开源物理AI数据集已被下载超过1500万次，包含35万条真实和仿真轨迹以及5700万次抓取数据。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#0369a1;">值得关注：</strong>大语言模型的开源生态彻底改变了AI软件的竞争格局，英伟达正试图在机器人领域复制这一路径。当GR00T 1.7、Teleop和Cosmos 3通过LeRobot全面开源，从数据采集、仿真训练到真机部署的全链路工具链被标准化，具身智能的开发门槛将大幅降低。英伟达的策略很清晰：卖芯片的同时，用开源生态锁定机器人开发的底层标准。
+</p>
+
+<p style="border-top:2px solid #e5e7eb;margin:32px 0 24px 0;"></p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+今天这十条动态，看似分散在Coding、地缘政治、硬件和具身智能等不同赛道，实则指向同一个信号：<strong style="color:#111827;">AI产业链正在以前所未有的速度走向深度绑定</strong>。国产卡跑通了万亿模型，大国开始互相指控，芯片巨头忙着与模型公司结盟，而机器人正在从单点技能走向全栈自进化。
+</p>
+
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+当算力供给成为模型公司的生命线，当芯片厂商不再只是供应商而是利益共同体，当竞争从比分数变成比结盟——我们正在进入一个AI产业格局加速重构的时代。谁能率先在国产算力替代和工程闭环上取得突破，谁就能在这轮竞赛中占据优势。准备好应对这个新时代的人，将定义接下来的十年。
+</p>
+
+</body>
+</html>

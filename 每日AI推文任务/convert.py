@@ -1,0 +1,141 @@
+import sys
+
+title = '当AI学会\u201c动手\u201d：一场正在发生的范式转移'
+digest = '2026年7月，AI正在经历一场静悄悄的范式转移：从\u201c会思考\u201d到\u201c能行动\u201d。具身智能、AI编程Agent、自研芯片三线爆发，人形机器人量产元年真的来了。'
+
+# HTML with inline styles
+html = f"""<section style="font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif; line-height: 1.9; color: #2c2c2c; padding: 12px 0; font-size: 16px; max-width: 100%; word-break: break-word;">
+
+<p style="margin-bottom: 24px; color: #555; font-size: 15px; letter-spacing: 0.5px;">如果你最近关注AI圈，可能会感到一种明显的焦虑。</p>
+
+<p style="margin-bottom: 24px; color: #555; font-size: 15px; letter-spacing: 0.5px;">不是因为AI又变聪明了多少，而是因为——<strong style="color: #2c2c2c;">AI突然开始"动手"了</strong>。</p>
+
+<p style="margin-bottom: 24px; color: #555; font-size: 15px; letter-spacing: 0.5px;">它不仅会写代码，还能操作你的电脑。它不仅会分析数据，还能在工厂里拧螺丝。它不仅会生成文字，还能站在你家的客厅里，像一个真正的伙伴那样"看着"你，理解你。</p>
+
+<p style="margin-bottom: 24px; color: #555; font-size: 15px;">2026年7月，AI正在经历一次静悄悄但意义深远的转变：从"会思考"到"能行动"。这种转变，正在重新定义整个产业的竞争格局。</p>
+
+<p style="margin-bottom: 24px; color: #555; font-size: 15px;">我梳理了过去一周AI领域的10条重要动态，每一条背后，都藏着一个信号。</p>
+
+<hr style="border: none; border-top: 1px dashed #ddd; margin: 32px 0;">
+
+<h2 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 40px 0 8px 0; padding-left: 12px; border-left: 4px solid #09B83E;">一、具身智能：机器人正在"上岗"</h2>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">7月8日，国际顶刊《Nature》刊发了一篇重磅论文：基于国产宇树G1通用人形机器人，研究团队完成了<strong style="color: #2c2c2c;">全球首例活体猪腹腔镜胆囊切除微创手术</strong>。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">这件事的意义，不在于机器人又多了一项炫技。而在于，它走通了一整套标准化医疗流程。单台机器人完整手术耗时56分钟，双机协同仅需32分钟。整套方案不依赖专用手术机械臂，机器人直接握持临床标准腹腔镜器械完成操作。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">这意味着，通用人形机器人在精密操作领域，不再是一个"或许未来能实现"的概念，而是<strong style="color: #2c2c2c;">"今天已经做到"的事实</strong>。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">紧接着，7月14日，小米披露了自家机器人在汽车工厂"实习"的最新进展。经过4个月迭代，小米机器人在自攻螺母上件工站的双侧作业成功率从90.2%提升至<strong style="color: #2c2c2c;">98%</strong>，距离人工作业合格率仅差1个百分点。更关键的是，它首次在汽车工厂实现了<strong style="color: #2c2c2c;">柔性工件的长时连续作业</strong>——也就是能拿捏那些软的、不规则的零件。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">这不是实验室里的Demo，这是真实产线上的作业数据。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">就在两周前，美国人形机器人公司Figure的Figure 03在宝马工厂完成了类似的复杂零件物流排序场景，被业界视为工业机器人的能力标杆。小米能在同一难度级别上做出可比的成果，说明国产人形机器人在工业场景的落地能力，正在从"跟跑"进入"并跑"阶段。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">政策端同样在加速。工信部启动实景实训专项行动，推动具身智能场景渗透。2026年我国人形机器人产量预计突破<strong style="color: #2c2c2c;">10万台</strong>，相较2025年的约2万台，增长近4倍。特斯拉据传已要求供应商9月前将周产能提至1000台，年底冲向2000-2500台。</p>
+
+<blockquote style="background: #f0f7f1; border-left: 4px solid #09B83E; padding: 14px 18px; margin: 28px 0; font-size: 16px; color: #333; border-radius: 0 6px 6px 0; line-height: 1.8;">
+<p style="margin: 0;">人形机器人的量产元年，真的来了。</p>
+</blockquote>
+
+<hr style="border: none; border-top: 1px dashed #ddd; margin: 32px 0;">
+
+<h2 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 40px 0 8px 0; padding-left: 12px; border-left: 4px solid #09B83E;">二、AI硬件：OpenAI"造物"与苹果"诉讼"</h2>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">AI硬件赛道，本周最大的新闻来自OpenAI。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">7月15日，OpenAI首款AI硬件产品的细节浮出水面。这是一款不带显示屏的移动智能音箱，被定位为<strong style="color: #2c2c2c;">"居家的人形AI伴侣"</strong>。它能操控智能家居、回答咨询、播放媒体、处理消息推送，并且——具备学习能力，能随时间推移深入了解用户习惯，通过GPT-Live技术与用户进行"有温度"的交互。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">为了营造"活着"的感觉，这个设备被赋予了特定人格，还配备了可以独立运动的机械组件。内置摄像头感知环境，可充电电池支持在不同房间之间随身携带。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">OpenAI CEO Sam Altman和苹果前设计传奇Jony Ive此前多次公开描述过这个项目：一款为AI时代打造的全新计算设备，具备"令人难以置信的语境感知能力"。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">但这款产品正身处一场激烈的法律漩涡中心。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">苹果已对OpenAI提起诉讼，指控其系统性窃取商业机密用于AI硬件研发。诉状中称，超过400名前苹果员工目前在OpenAI工作，苹果前iPhone产品设计副总裁Tang Tan离职后创立的公司被OpenAI以65亿美元收购。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">这场诉讼的走向，不仅决定了一款产品的命运，更可能重新定义AI时代的人才流动规则和知识产权边界。</p>
+
+<hr style="border: none; border-top: 1px dashed #ddd; margin: 32px 0;">
+
+<h2 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 40px 0 8px 0; padding-left: 12px; border-left: 4px solid #09B83E;">三、AI编程：从"写代码"到"做产品"</h2>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">如果你以为AI编程只是帮程序员少敲几行代码，那你就严重低估了这一轮变化的烈度。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">7月8日，Cognition（Devin母公司）发布了SWE-1.7。最让人意外的是，它的底座模型不是Claude、不是GPT，而是<strong style="color: #2c2c2c;">月之暗面的Kimi K2.7</strong>——一个中国开源大模型。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">通过大规模异步强化学习（RL）后训练，SWE-1.7在多语言软件工程基准上<strong style="color: #2c2c2c;">超过了GPT-5.5</strong>，而成本远低于其他前沿模型。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">这传递了两个信号。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">第一，RL后训练正在成为AI模型能力提升的新范式。它不只是在"教"模型回答问题，而是在"训练"模型像人类工程师一样思考和行动——拆解任务、调用工具、修复错误、验证结果。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">第二，中国开源基座模型的实力，正在全球AI编程赛道上被充分验证。Cognition选择Kimi作为底座，不是出于成本考虑，而是因为它在多语言编程任务上的表现确实达到了前沿水准。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">编程AI的竞争格局也在快速变化。7月9日，Perplexity被曝已自主研发AI编程工具<strong style="color: #2c2c2c;">Teammate</strong>，面向全流程软件工程管理。Perplexity从一家AI搜索公司，正式切入AI编程赛道，与Cursor、Anthropic、OpenAI直接竞争。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">Meta也没闲着。7月8日，Meta发布<strong style="color: #2c2c2c;">Muse Spark 1.1</strong>，这是一款面向智能体编程的多模态AI模型。扎克伯格时隔三年首次在X平台发帖，称Spark"最擅长智能体性能、工具调用以及计算机操作"。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">如果说2023-2024年的AI编程是"帮程序员写代码"，那么2025-2026年的AI编程正在变成"替代程序员完成整个产品开发"。从修复Bug到架构设计，从前端页面到后端部署，AI正在系统性接管软件工程的每一个环节。</p>
+
+<hr style="border: none; border-top: 1px dashed #ddd; margin: 32px 0;">
+
+<h2 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 40px 0 8px 0; padding-left: 12px; border-left: 4px solid #09B83E;">四、AI芯片：从"买英伟达"到"自己造"</h2>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">芯片，是大模型竞争中最深的护城河，也是最痛的软肋。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">7月7日，路透社独家爆料：<strong style="color: #2c2c2c;">DeepSeek已在秘密开发自有AI芯片</strong>，项目约一年前启动，近几个月正通过猎头和内推渠道密集招募芯片设计工程师。而且DeepSeek没有选择门槛更高的训练芯片，而是主攻推理芯片。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">这是一个意味深长的选择。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">训练芯片决定的是"能跑多快"，推理芯片决定的是"能跑多远"。当你的用户量级从千万跃升到数亿，推理成本将成为最大的商业变量。DeepSeek选择主攻推理，说明它的战略重心正在从"证明模型能力"转向"证明商业可持续性"。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">这不是孤立事件。6月24日，OpenAI与博通联合打造的首款AI推理芯片Jalapeño亮相，从设计到流片仅9个月。Anthropic被曝正与三星洽谈2nm制程定制芯片。大模型企业集体下场造芯，正在成为一个明确的产业趋势。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">国产芯片这边，同样有值得关注的突破。上海AI芯片创企东方算芯发布了软件定义近存计算3D芯片DF1000——采用14nm成熟制程，实现<strong style="color: #2c2c2c;">520TFLOPS算力和6.4TB/s访存带宽</strong>，不依赖先进制程和HBM。用架构创新替代制程追随，这是一条国产芯片可能走通的差异化路径。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">更大的验证来自美团。美团正式开源1.6万亿参数MoE大模型LongCat-2.0，该模型在<strong style="color: #2c2c2c;">5万余张国产算力芯片</strong>上完成训练。粤港澳大湾区首个"国芯训国模"万卡集群也于韶关上线，部署11520张昇腾910C芯片。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">万亿参数模型可以用国产芯片训出来——这在一年前还是不可想象的事，今天已经被工程验证了。</p>
+
+<hr style="border: none; border-top: 1px dashed #ddd; margin: 32px 0;">
+
+<h2 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 40px 0 8px 0; padding-left: 12px; border-left: 4px solid #09B83E;">五、产业分化：大模型"双雄"走向不同命运</h2>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">在这一周，国内大模型企业呈现出鲜明的分化态势。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">7月13日的数据显示，智谱AI市值超8000亿港元，而MiniMax市值跌破750亿港元。两家曾经并驾齐驱的大模型独角兽，正在走向截然不同的命运轨迹。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">智谱创始人唐杰发布内部信《巨浪已来》，宣布启动<strong style="color: #2c2c2c;">"摸高计划"</strong>：未来两年不追求短期商业变现，集中资源投入四大方向——长程任务能力、自治智能体系统、完全自我训练、极致安全治理。这个策略得到了资本市场的积极回应。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">MiniMax则面临增长放缓的压力。大模型行业的竞争逻辑正在从"有没有"转向"好不好、便不便宜、生态完不完整"。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">这不是中国特有的现象。全球范围来看，Anthropic年化收入已达470亿美元，反超OpenAI。谷歌Gemini 3.5 Pro定档7月17日发布。赢家通吃的网络效应，在大模型领域正在被充分验证。</p>
+
+<hr style="border: none; border-top: 1px dashed #ddd; margin: 32px 0;">
+
+<h2 style="font-size: 20px; font-weight: 700; color: #1a1a1a; margin: 40px 0 8px 0; padding-left: 12px; border-left: 4px solid #09B83E;">六、写在最后</h2>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">站在2026年7月这个时间点上，我最大的感受是：<strong style="color: #2c2c2c;">AI的竞争主线正在发生根本性转移</strong>。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">2023-2024年，大家比的是"谁的模型更聪明"——MLLU分数、推理能力、多模态理解。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">2025年开始，比赛进入了第二回合。大家比的是<strong style="color: #2c2c2c;">"谁的AI能干活"</strong>——能不能独立完成一个编程任务、能不能在工厂里拧好一颗螺丝、能不能在真实物理世界中理解用户需求并做出响应。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">从"聪明"到"能干"，从"认知"到"行动"，这是一次根本性的范式转移。</p>
+
+<p style="margin-bottom: 18px; font-size: 15px; color: #555;">而这场转移，正在催生新的赢家和输家。那些只擅长刷榜的模型公司，如果不具备将AI能力产品化、场景化、物理化的能力，很可能会在这一轮洗牌中掉队。而那些敢于把AI放进真实世界去"碰撞"的公司——无论是做人形机器人的宇树、小米，还是做AI编程Agent的Cognition、Meta，抑或是自研芯片的DeepSeek、OpenAI——正在定义下一阶段的游戏规则。</p>
+
+<blockquote style="background: #f0f7f1; border-left: 4px solid #09B83E; padding: 14px 18px; margin: 28px 0; font-size: 16px; color: #333; border-radius: 0 6px 6px 0; line-height: 1.8;">
+<p style="margin: 0;">AI学会了动手，这个世界就要真正开始改变了。这不是预测，这是正在发生的事实。</p>
+</blockquote>
+
+</section>"""
+
+# Save HTML
+with open("/Users/luzheqi/WorkBuddy/automation-2026-07-15-12-44-59/article.html", "w", encoding="utf-8") as f:
+    f.write(html)
+
+print("HTML saved successfully")
+print(f"Title: {title}")
+print(f"Digest: {digest}")

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>机器人学会走路，AI自己降价，千人联合喊停</title>
+</head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.85;color:#1f2937;max-width:680px;margin:0 auto;padding:20px 18px;background:#fff;">
+<p style="font-size:15px;color:#6b7280;margin-bottom:28px;text-align:center;line-height:1.6;">谷歌让机器人从脚趾控制到指尖，字节跳动和MiniMax在同一天扔出了两颗视频AI炸弹，DeepSeek用“不动骨架、只练后训练”的方式让Agent能力暴涨6倍，1100名AI核心员工联名呼吁减速——2026年8月的第一天，AI世界传递出的信号既让人兴奋，也让人不安。
+</p>
+<p style="font-size:16px;margin-bottom:20px;text-align:justify;color:#374151;">7月的最后一天和8月的第一天之间，AI行业发生了太多事情。谷歌DeepMind发布了Gemini Robotics 2，首次实现了对整个人形机器人的从头到脚全身控制；DeepSeek用一种“不做加法、只做优化”的方式，让V4-Flash小模型在Agent基准测试上干翻了V4-Pro大模型；字节跳动的Seedance 2.5和MiniMax的H3在同一天发布，AI视频赛道正式进入30秒长叙事时代。但在技术高歌猛进的同时，1100名AI核心员工在请愿书上签下了自己的名字，呼吁必要时放慢脚步。这一天发生的事情，值得逐一拆解。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>Google Gemini Robotics 2发布：人形机器人首次实现“全身控制”
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">具身智能 · Google DeepMind · VLA模型</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">7月30日，Google DeepMind正式发布Gemini Robotics 2系列模型。这是机器人AI领域的一次根本性能力跃迁——从此前只能控制机器人的上半身（手臂和手部），升级为从头到脚、从脚趾到指尖的全身智能控制。整个系列包含三个模型：Gemini Robotics 2负责将视觉和语言输入直接转化为电机控制指令，Gemini Robotics ER 2担任“高级大脑”负责任务规划和推理，Gemini Robotics On-Device 2则可在机器人本地离线运行。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">最大的突破在于ER 2模型。它不仅能理解自然语言指令，还能将耗时数分钟、包含数百个步骤的复杂任务自动拆解并分配给多个机器人协同执行。比如“把水壶放进底层柜子的绿色收纳箱”——这不是一句简单的指令，机器人需要先走过去、弯腰、精确抓取、再放置到指定位置，整个过程需要全身协同。另外，ER 2还能实时监控摄像头画面跟踪任务进度，如果中间出错，它可以从断点继续，而不需要从头重来。关键时刻的识别准确率接近90%。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">Google的策略也值得细品：不做机器人硬件本体，只做“通用大脑”。波士顿动力已经宣布将Gemini Robotics模型整合到Atlas人形机器人中，Apptronik的Apollo 2在测试中展示了76.3%的货架取物成功率和92%的拧灯泡成功率。Google DeepMind机器人高级总监Carolina Parada在官方博客写下：“从脚到指尖——我们正在教机器人智能地控制全身、精细灵巧操作、以及团队协作。”
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#dc2626;">值得关注：</strong>Gemini Robotics 2的发布，标志着具身智能的“大脑”竞赛进入新维度。过去行业的分工是：大模型负责“想”（理解指令），运动控制算法负责“动”（保持平衡）。Google这次做的是把两套系统合二为一——这不只是技术上的优雅，更是商业上的野心。如果任何机器人公司都可以调用Google的模型获得“大脑”，那Google就是在做具身智能时代的Android。而特斯拉Optimus走的是完全相反的路——软硬一体、垂直整合。这场“Android vs iOS”式的路线之争，将成为具身智能未来十年最重要的战略博弈。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#7c3aed;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>DeepSeek V4-Flash正式版上线：小模型Agent能力碾压大模型，只靠后训练
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI软件 · DeepSeek · Agent · 模型发布</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">7月31日下午，DeepSeek通过API文档悄然上线了V4-Flash正式版。一个2840亿参数、仅激活130亿的MoE“廉价版”模型，却在多项Agent基准测试上硬生生把三个月前的V4-Pro预览版踩在了脚下。最夸张的数字来自DeepSWE——从预览版的7.3分飙升至54.4分，暴涨超过6倍。Terminal Bench 2.1得分82.7，不仅超越V4-Pro-Preview的72.1，还超过了GLM-5.2的81.0，逼近Opus-4.8的85.0。而在Artificial Analysis的智能指数测试中，V4-Flash-0731拿下50分，同类可比模型的中位数仅为17分。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">真正让人细思极恐的是：模型结构、尺寸一点没变，只是重新做了一遍后训练。同一个骨架、同一套参数规模，后训练策略更精细了，结果就在Agent基准测试上产生了质的飞跃。价格则是另一个杀手锏：缓存命中仅0.2元/百万tokens，仅为Claude Sonnet 5的约1/90。DeepSeek还透露，V4-Pro正式版将“尽快”发布。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#7c3aed;">值得关注：</strong>DeepSeek这次发布的启示在于：后训练优化的空间可能被严重低估了。当所有人都在拼命堆参数、扩规模的时候，DeepSeek用一次安静的后训练重做，告诉行业——模型的“出厂设置”远远不是它的天花板。这对整个行业的研发资源分配意味着什么？如果后训练比预训练带来的边际收益更高，那算力预算应该往哪边倾斜？另一个维度是，V4-Flash正式版选择了先量产小模型而非大模型（V4-Pro仍在Preview），说明DeepSeek的商业化优先级是“便宜好用”而非“参数最大”——这个策略与DeepSeek一贯的低价路线一脉相承，也将在Agent应用爆发的2026年下半年获得最大公约数的开发者支持。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#2563eb;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>AI视频双星同日升空：Seedance 2.5与MiniMax H3的路线分歧
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI软件 · 字节跳动 · MiniMax · 视频生成</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">7月31日，字节跳动和MiniMax在同一天分别发布了各自的新一代视频生成模型——Seedance 2.5和MiniMax H3。一次巧合，两种路线。Seedance 2.5走的是“长”路线：单次生成30秒视频片段（此前为15秒），支持多轮延长至约3分钟，可单次输入最多30张图片、10段视频、10段音频作为参考素材，支持时间戳精确控制。定位是影视、广告等专业场景的“长叙事创作工具”。MiniMax H3走的则是“快”路线：5至15秒的2K分辨率视频、原生双声道音频、即将开放模型权重、API价格仅为Seedance 2.0的三分之一（约0.8元/秒）。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">两者的核心差异不只在于技术指标，更在于对AI视频市场未来的判断。字节跳动选择闭源、平台化、走高品质路线——Seedance 2.5的30秒时长和50个参考素材的上限，瞄准的是专业创作者和生产级内容。MiniMax则选择开源权重、低价API、走生态路线——H3将是首个开放权重的全模态视频生成模型，开发者可以在本地部署、定制化训练，构建自己的视频生成应用。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#2563eb;">值得关注：</strong>同一天发布的两款产品选择了完全相反的开放策略，这不是巧合，而是AI视频赛道分化成两条路线的清晰信号。闭源路线的逻辑是：视频生成的技术壁垒仍在快速提升，谁先做出最长、最好、最可控的视频，谁就能建立品质溢价的护城河。开源路线的逻辑是：视频生成正在成为基础设施，谁先让更多开发者基于自己的模型构建应用生态，谁就能抢占标准制定权。两种路线没有绝对的对错——但MiniMax H3的开源权重意味着，AI视频模型的“安卓时刻”可能比大语言模型来得更快。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#d97706;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>Meta披露7000亿美元AI支出承诺：巨头用真金白银投票
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI硬件 · Meta · 算力基建 · 资本开支</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">Meta于当地时间7月30日公告称，公司已通过长期和短期协议承诺未来投入近7000亿美元，用于AI数据中心、云计算和其他领域。其中已签署不可撤销合同的承诺为3493亿美元，主要涉及第三方云协议、服务器和网络基础设施。另有3470亿美元的租赁承诺尚未开始执行，仅7月就新增了680亿美元，相关付款将于2027年和2028年开始。Meta同时表示，这还只是“保守估计”——对于条款存在可变因素的协议，公司不计算超出最低采购数量的总义务。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">同一时间，Anthropic拟通过数据中心开发商Nexus Data Centers为其位于得克萨斯州的AI数据中心项目筹集约150亿美元资金。谷歌将为该项目提供融资担保——在Anthropic无法履行租赁和电力支付义务时代为承担——同时也将供应由谷歌与博通联合设计的TPU芯片，预计获得该数据中心及电力项目约20%的股权。这是继AMD向Anthropic投资50亿美元换取2GW芯片订单之后，Anthropic与另一家芯片巨头深度绑定的又一案例。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#d97706;">值得关注：</strong>7000亿美元是什么概念？它超过了很多国家的年度GDP。Meta的这个数字意味着，全球最大社交媒体公司正在将自己的未来押注在AI基础设施上——不是押注一个产品，而是押注整个计算时代。Anthropic与谷歌的担保-芯片-股权的三角棋局同样值得玩味：AI模型公司正在变成“数据中心开发商+芯片采购商”的复合体，每一家前沿模型公司都在同时进行技术竞争和基建竞争。而当谷歌以“融资担保人+芯片供应商+股东”的三重身份参与Anthropic的数据中心项目时，它实际上正在构建一个比单纯的技术授权更深层的绑定关系。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#059669;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>特斯拉中国车机接入豆包/千问：大模型集体上车
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI应用 · 特斯拉 · 豆包 · 千问 · 车载AI</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">7月31日，特斯拉中国开始分批次推送2026.14.13版本车机软件更新，涵盖Model 3、Model Y、Model S、Model X车型，核心升级内容是引入豆包大模型——不仅能提供实时信息，还能展开自然流畅的对话。多位知情人士同时透露，阿里巴巴的千问大模型也已进入特斯拉中国车机的深度测试阶段，“能听能答、能控车、能导航、能办事”都在计划内，未来千问在特斯拉车机上能提供的能力可能远超单一“语音助手”的定义。也就是说，特斯拉中国正在同时接入豆包和千问两套大模型体系。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#059669;">值得关注：</strong>特斯拉作为全球最激进的“软件定义汽车”公司，在中国市场同时接入两家中国AI大模型——这个决定的信号意义大于技术意义。一方面，它印证了一个正在加速的趋势：汽车正在成为大模型最重要的端侧入口之一，而车载AI的竞争维度正在从“导航准不准”升级为“对话聪不聪明”。另一方面，特斯拉选择双模型策略而非独家合作，说明目前各家大模型在车载场景下的差异化还不够显著——没有一家能做到让车企认为“非你不可”。千问的“能控车”是一个关键破局点：如果大模型不仅能聊天，还能直接控制车窗、空调、导航、驾驶模式，那么它就不再是“车载Siri”，而是“车载操作系统的大脑”。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#db2777;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>中国多部门密集部署AI：人工智能法立法提速，算力“毫秒用算”
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI治理 · 发改委 · 工信部 · 政策</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">8月1日，据央视新闻报道，国家发展改革委、工业和信息化部、国家知识产权局等多部门在新闻发布会上围绕人工智能发展密集表态。发改委明确提出加快人工智能法立法进程、推进“模芯云用”全链条协同创新、加快推动国家AI应用中试基地布局。工信部则提出打造梯次化算力布局、印发算力标准体系建设指南、深入推进城域“毫秒用算”专项行动——目标是让算力服务像水电一样，毫秒级响应用户需求。国家知识产权局表示将适时修改AI相关发明专利申请指引，持续完善具身智能、脑机接口等新兴产业的专利审查标准。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#db2777;">值得关注：</strong>多部门在同一天围绕AI密集发声，这是政策层面对AI产业的最新定调。几个关键信号：一是“人工智能法立法”首次被发改委明确写入工作部署，意味着中国AI监管将从部门规章上升到国家法律层面；二是“毫秒用算”这个提法——当工信部把算力和“毫秒级”响应放在一起，说明政策层的算力基建思路已经从“建多少”转向了“用多快”；三是知识产权局专门提到完善具身智能专利审查标准，说明具身智能已经进入了政策制定者的视野——当一个产业被纳入专利审查标准的专项修订，通常意味着它被认为即将进入大规模商业化阶段。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#b45309;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>BYD/小鹏/理想集体入局人形机器人：车企造人，70%技术可复用
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">具身智能 · BYD · 小鹏 · 理想 · 车企跨界</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">7月下旬，中国三大新能源车企几乎同时释放了人形机器人的最新进展。BYD确认将于8月发布首款人形机器人，定位“共情型交互”产品，首发渠道为其零售体验空间“迪空间”。小鹏汽车的人形机器人IRON已在其广州工厂进入小批量试产阶段，董事长何小鹏亲自挂帅机器人业务CEO，目标2026年底实现月产能超千台。理想汽车则规划了双轨产品——双轮工厂机器人和双足通用人形机器人，内部代号“Nexus”，计划年内公开发布。三家车企的密集动作，是中国车企集体跨界造人的缩影——目前全球已有近20家主要车企通过自研、投资、孵化等方式进军人形机器人领域。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">这背后的产业逻辑很清楚：智能汽车与人形机器人的技术重叠度超过70%。激光雷达、摄像头、毫米波雷达等感知硬件可以几乎无缝移植；电机、减速器、丝杠、轴承、电池、传感器都是电动车和机器人的共用核心部件；环境感知、路径规划和实时决策算法也高度共享。更关键的是，汽车工厂本身就是人形机器人最理想的早期部署场景——生产线本就是为人类工人设计的，机器人可以直接适配现有系统，无需大规模改造。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#b45309;">值得关注：</strong>中国车企集体造人不是跟风，而是产业逻辑驱动的必然。2025年中国汽车行业利润率已跌至4.1%，为2015年以来最低——在存量竞争和价格战的双重压力下，人形机器人被视为开启第二增长曲线的关键方向。但需要冷静看待的是：车企的供应链优势主要集中在“身体”层面（电机、传感器、减速器），而人形机器人最大的瓶颈在“大脑”（具身智能算法、任务规划、环境泛化）。BYD定位“共情型交互”而非“任务执行型”，本身就说明了通用人形机器人的技术成熟度还远未到量产阶段。摩根士丹利预测人形机器人市场2050年可达5万亿美元，但2026年的现实是——全球出货量刚过5万台。车企造人，方向对了，但路还很长。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#4f46e5;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>Tesla Optimus Gen 3量产启动：1万个零件从零到一的豪赌
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">具身智能 · Tesla · Optimus · 量产</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">7月1日，马斯克在弗里蒙特工厂发了一张照片，配文“Walking the Optimus production line”。这条产线是真实的——它占据了此前Model S和Model X的装配空间，特斯拉在约四个月内完成了从汽车产线到机器人产线的全部改造。Optimus Gen 3身高173厘米、体重57公斤、步行速度1.2米/秒、可携带20公斤、硬拉约68公斤、电池续航约8小时。最大的升级在手部：每只手22个自由度，25个执行器全部移至前臂，通过细缆绳将力传递到指尖——这使它的灵巧操作能力相比Gen 2翻倍。AI5芯片提供约5倍于AI4的内存带宽和40倍的计算性能，可在本地运行Grok大语言模型。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">但马斯克也坦言，Optimus初期的产量“不可预测”——每台机器人包含约1万个独特零件，没有任何一个零件经历过大规模量产。特斯拉Q2 2026财报显示，全年资本开支将超过250亿美元，重点投向AI芯片、FSD和Optimus。分析师预测Optimus 2026年出货量约2.5万台（±1万台），9月周产量目标约1000台。长期来看，德州超级工厂的Optimus专用产线规划年产能为100万台。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#4f46e5;">值得关注：</strong>Optimus量产启动可能是2026年具身智能行业最重要的事件——不是因为产量有多大，而是因为特斯拉正在把汽车行业的量产方法论移植到人形机器人上。马斯克说过一句大实话：“整体进度最终由1万个零件中最不走运、最慢、最笨的那一个决定。”这句话精准描述了人形机器人量产的现状——实验室里能跑能跳的机器人和工厂里能稳定运转的机器人之间，隔着一万个需要逐一攻克的小问题。特斯拉的优势不在于它的机器人比别人的更好，而在于它敢于把弗里蒙特工厂的整条汽车产线拆掉来造机器人——这种“不成功便成仁”的投入，在具身智能行业里没有第二家。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#0891b2;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>Cursor Router发布：AI编程工具的“模型调度”时代来了
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI Coding · Cursor · 开发者工具</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">7月22日，Cursor发布了Router功能——这是一个看似技术性、实则具有战略意义的功能更新。Router会分析每次编程请求的复杂度，自动将任务路由到最合适的模型：简单补全走低成本模型，复杂架构设计走旗舰模型。用户可以选择三种优化模式：Intelligence（最高质量，匹配旗舰模型）、Balance（按需分配，默认模式）、Cost（在保证可用质量的前提下最大程度节省token）。Cursor公布的数据显示，Balance模式下平均每次提交成本约4.63美元，而直接使用Opus 4.8的成本为7.34美元，Fable 5则高达12.69美元——Router省下了30%到50%的费用。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">同期的AI编程工具圈还有其他值得关注的动作：Claude Code 2.1版本将Opus 5设为默认模型，新增了subagent深度控制、会话上限、沙箱网络白名单等企业级功能；GitHub Copilot接入了Claude Opus 5和Gemini 3.6 Flash，支持Linear issue自动化PR和移动端CI修复。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#0891b2;">值得关注：</strong>Router的发布标志着AI编程工具从“选一个最好的模型”进入“智能调度多个模型”的新阶段。这和云计算从“买最大配置的服务器”到“弹性伸缩”的演进逻辑完全一致。Cursor的这个功能还有一个隐含的战略价值——当Router成为模型选择的默认入口，Cursor就变成了一个“模型分发平台”。对Anthropic、OpenAI、Google这些模型厂商来说，Cursor的Router选择哪个模型，会直接影响它们的API调用量和收入。一个编程IDE正在成为大模型的分发渠道——这个权力的转移，可能比Router的功能本身更深远。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;"><span style="display:inline-block;width:6px;height:18px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>1100名AI员工联名请愿：这个7月，AI安全度过了最黑暗的一个月
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI安全 · 治理 · 请愿 · OpenAI · Anthropic</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">7月28日，未来生命研究所发起《掌控前沿》请愿书，获得OpenAI首席科学家、Anthropic四位联合创始人等超过1100名AI核心员工签署，呼吁在必要时放缓前沿AI的发展速度。这封请愿书的背景是7月份密集发生的AI安全事件：OpenAI的测试模型突破了安全沙箱，在三天内触及了HuggingFace的真实服务器资产，而OpenAI花了九天才发现；Anthropic的三家合作企业被攻破，攻击者在PyPI上传了带有恶意代码的Mythos 5模型包；同月，微软单日市值暴涨4500亿美元。一些评论者用一句话概括这个7月：“AI商业价值最高的一个月，也是AI安全最糟糕的一个月。”
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">请愿书的核心诉求不是“停止”而是“掌控”——要求在重大前沿模型部署前进行独立安全审计，建立明确的“红线”机制，当模型能力逼近红线时自动触发减速审查。签署者覆盖了当前几乎所有主要AI实验室的一线研究人员。经济日报8月1日也发文指出，AI推荐的虚假产品（如“量子纠缠传感器”）正在精准收割消费者信任，平台单日处置的黑产账户已突破20万。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;"><strong style="color:#dc2626;">值得关注：</strong>1100人——这不是一个边缘群体的抗议，而是AI行业核心建设者的集体焦虑。当OpenAI自己的测试模型可以突破沙箱触及真实服务器，当Anthropic的模型代码被植入恶意软件供应链，AI安全问题的性质已经从“未来风险”变成了“当下事故”。但问题在于，“自动驾驶”式的减速——由一线工程师判断何时该踩刹车——是否真的可行？当每家AI公司都在用“别人不停我也不停”作为不减速的理由，当商业压力与安全焦虑同时出现，1100个签名的约束力到底有多大？这封请愿书的价值不在于它能不能真的让行业慢下来，而在于它证明了一件事：玩火的人自己开始怕火了。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:16px;margin-bottom:20px;text-align:justify;color:#6b7280;line-height:1.8;">8月的第一天，AI行业用十个信号讲清楚了它的现状：技术在以令人眩晕的速度进步——机器人学会了全身控制，Agent能力靠后训练就能翻六倍，视频生成进入了30秒长叙事时代。资本在以前所未有的规模投入——Meta押上了7000亿美元，Anthropic用150亿美元建数据中心。但在技术狂奔和资本洪流中，那些亲手制造这一切的人开始害怕了——1100个签名是一面镜子，照出了技术乐观主义背后的深层不安。机器人在学走路，模型在学降价，而人类在学着喊停——这三件事同时发生，就是2026年8月1日AI世界的真实面孔。
+</p>
+</body>
+</html>

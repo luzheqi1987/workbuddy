@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>半价旗舰、开源联名、万亿押注：AI重写价签</title>
+</head>
+<body style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;line-height:1.85;color:#1f2937;max-width:680px;margin:0 auto;padding:20px 18px;background:#fff;">
+<p style="font-size:15px;color:#6b7280;margin-bottom:28px;text-align:center;line-height:1.6;">
+当旗舰模型卖到半价，当25家公司联名要开源，当8800亿美元砸向芯片
+</p>
+<p style="font-size:16px;margin-bottom:20px;text-align:justify;color:#374151;">
+今天AI圈有三件事在同一天发生，但它们指向同一个终点。第一件：Anthropic发布了Claude Opus 5，性能逼近自家最贵的旗舰Fable 5，价格却只有一半——如果跟Fable 5差不多，为什么还要花两倍价格用Fable 5？第二件：英伟达、微软、Meta等25家科技企业联名发表公开信，呼吁美国政策制定者不要过早限制开放权重AI模型，黄仁勋为此发了自己在X上的第一条帖子，马斯克转发说“完全支持”——而OpenAI和Anthropic没有签名。第三件：韩国总统带着三星会长、SK集团掌门人亲赴硅谷，推进一项8800亿美元的AI投资计划，英伟达与SK海力士宣布合作总价值超过5000亿美元。三件事看似各自独立，但它们共同回答了一个问题：AI的定价权、开放权和供应链控制权，正在被重新分配。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#dc2626;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+Anthropic发布Claude Opus 5：旗舰性能打对折，安全分类器拦截减少85%
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI软件 · Anthropic</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月24日，Anthropic正式发布新一代旗舰模型Claude Opus 5，全平台同步上线。在Frontier-Bench软件工程基准上，Opus 5的成绩比上一代Opus 4.8翻了一倍还多，解新题的ARC-AGI 3得分是第二名的三倍，模拟电脑操作的OSWorld 2.0以约三分之一的成本超过了Fable 5的最好成绩。在Cursor公布的最新榜单上，Opus 5的Max档跑出70.0%，仅落后Fable 5的70.5%半个百分点，但每任务成本8.23美元对比17.32美元——落后半个百分点，价格不到一半，Token用量还少了40%。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+更值得关注的是Anthropic的产品策略。Opus 5在网络安全任务上被刻意没有训练到最高水平——找漏洞的能力接近管制版旗舰Mythos 5，但把漏洞写成可用攻击代码的能力被远远甩在后面。效果是安全分类器的拦截频率比Fable 5低85%左右，对每天写代码的人来说意味着被误伤的概率少了一大截。被拦截的请求也不再收到一句“我帮不了你”，而是自动回退给Opus 4.8接着干活。Anthropic把智能拿出来打折，把危险单独上了锁。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#dc2626;">值得关注：</strong>Opus 5的发布不是单纯的能力升级，而是Anthropic对产品线分层逻辑的一次重构。过去Haiku、Sonnet、Opus按聪明程度排队，现在Opus 5和Mythos 5之间隔着的不是智商，是风险与合规。在中国新模型以低价冲击市场、GPT-5.6全面推送的背景下，Anthropic没有降单价，改讲“每美元能干成多少活”——模型比拼的正在从“有多聪明”挪向“敢不敢放手让它干”。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#7c3aed;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+25家科技企业联名上书：开放权重AI模型不应被过早限制
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI软件 · 英伟达 × 微软 × Meta</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月24日，英伟达、微软、Meta、IBM、戴尔、Hugging Face、Mistral、Perplexity等25家美国企业与机构联合发表题为《开放权重与美国在人工智能领域的领导力》的公开信，呼吁政策制定者避免过早限制或禁止开放权重AI模型。英伟达CEO黄仁勋为此开通了个人X账号，发出的第一条帖子就是分享这封公开信，称“开放模型能增强安全性与网络安全防护、加速创新与普及，并支持主权自主”。微软CEO纳德拉发文力挺，马斯克转发表示“完全支持”。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+公开信的核心主张非常明确：美国能否继续领导AI时代，不取决于能否守住某一个最强模型，而取决于能否建立一个足够开放、能够扩散到各行各业的AI生态。信中特别回应了“蒸馏”争议——主张用大模型的输出去训练更小更专用的模型是合法工程手段，不应与知识产权盗窃混为一谈，应该通过精准的法律和商业框架打击真正的盗窃行为，而非全面限制开放权重技术。信中还指出，单纯依赖闭源模型并非天然安全，它们同样可能被攻破、被误用或以外部人士难以察觉的方式失效，而开放权重模型能让众多科研人员审视其行为、识别漏洞、开发防护措施。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#7c3aed;">值得关注：</strong>两个细节决定了这封信的分量。第一，联署方既包括微软、英伟达这样的基础设施巨头，也包括Mistral、Perplexity等AI新锐，还有Linux基金会、Mozilla以及Andreessen Horowitz、Y Combinator等投资机构——这是一次横跨产业、开源社区和资本三方的集体行动。第二，OpenAI和Anthropic均未在信上署名，两家正各自备战潜在规模庞大的IPO，核心战略是开发专有封闭模型。OpenAI CEO奥特曼表态称“希望美国在开源AI领域胜出”，但不签名的姿态本身就说明了利益分歧的边界——开放有利于生态繁荣，但不利于个别公司锁定利润。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#2563eb;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+韩美硅谷AI峰会：三星SK海力士推进8800亿美元AI布局
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI硬件 · 三星 × SK海力士 × 英伟达</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月25日，韩国总统李在明率三星电子会长李在镕、SK集团会长崔泰源、现代汽车会长郑义宣及Naver创始人李海珍抵达硅谷，出席旧金山人工智能峰会，与英伟达CEO黄仁勋、OpenAI CEO奥特曼、Anthropic CEO阿莫迪及博通CEO陈福阳等美国科技领袖会面。峰会规格极高，约150名企业高管、投资者、研究人员和创业者参加。韩国方面明确表示，此次访问将推动多项长期谈判进入执行阶段，涵盖HBM芯片长期供应、战略投资及AI基础设施建设。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+具体合作已开始落地：英伟达宣布与SK海力士建立长期合作伙伴关系，确保下一代内存供应，并共同开发用于AI训练、AI代理和物理AI应用的HBM；SK Telecom计划使用英伟达Vera Rubin芯片和SK海力士HBM4内存构建2吉瓦数据中心，首期设施2027年上线，英伟达指出与SK集团合作的AI计划总价值超过5000亿美元。Anthropic CEO阿莫迪宣布与三星电子和SK海力士签署供应协议。英伟达还与现代汽车集团联合宣布开发自动驾驶轿车。三星与SK海力士合计控制全球约80%的HBM市场，韩方透露韩国本土芯片扩产的需求80%到90%来自美国企业。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#2563eb;">值得关注：</strong>这次峰会是韩国8800亿美元国家AI投资计划的关键落地节点。韩国上月宣布的这项计划由三星电子、SK集团和Naver等公司共同支持，涵盖芯片制造、AI数据中心和物理人工智能。当英伟达一边与SK海力士签5000亿美元合作、一边与Anthropic签供应协议、还与现代汽车搞自动驾驶，韩国实际上正在用举国体制把自己嵌入美国AI供应链的核心环节——HBM是AI芯片的“粮食”，谁锁住了HBM的长期供应，谁就锁住了未来5年AI基础设施扩张的上游阀门。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#ea580c;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+词元经济“中间层”崛起：AI基础设施进入资本化窗口
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI硬件 · 硅基流动 × 基流科技 × 无问芯穹</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+国家数据局数据显示，我国日均Token调用量两年增长超1000倍，围绕算力调度、推理优化的AI Infra“中间层”正在进入资本视野。2026年以来，基流科技4月向港交所递交上市申请，硅基流动6月递表港交所拟以第18C章特专科技公司身份登陆主板，有望成为港股首只Token工厂概念股。硅基流动2025年实现收入5533万元同比增长653%，但年度亏损3.45亿元，算力资源成本占收入成本的86.9%。一级市场融资也在继续：无问芯穹5月宣布完成超7亿元融资，累计超过22亿元；趋境科技7月宣布A轮融资，半年内累计超10亿元。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+“中间层”企业主要提供系统软件和异构算力调度能力。硅基流动作为衔接算力、模型与应用的中间层，整合上游多厂商异构算力与主流AI模型，将底层算力转化为标准化的Token服务输出给下游代码生成、智能体、数据分析等场景。无问芯穹围绕多元异构算力、软硬协同和MaaS平台开展业务，日均Token调用量较2025年底增长超20倍。趋境科技则以自研ATaaS平台为核心，面向模型厂商、互联网平台和企业客户提供Token工厂建设和联合运营服务。专家指出，中间层正从“从0到1”进入“从1到100”结构性扩容期。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#ea580c;">值得关注：</strong>Token正在从大模型处理信息的技术参数，跃升为数字经济的核心价值载体。2024年中国Token吞吐量约142.5万亿次，2025年快速提升至约2426.3万亿次，增长率达1602.6%。但高速增长的收入尚未覆盖攀升的成本——硅基流动2025年毛利率转负至-24%，智谱年内亏损47亿元，MiniMax亏损18.72亿美元。行业的共性难题是：技术迭代是竞争基础，规模效应是盈利核心，而两者之间的窗口期，正是资本密集下注的理由。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#059669;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+马斯克预言AI五年超人类，呼吁巨头互审，宣布X全量开源
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI软件 · 马斯克 × 《经济学人》</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月24日，马斯克接受《经济学人》总编辑专访，给出了一系列惊人预判：AI约五年内智力将超越全人类集体智能，十年内人类大概率失去控制权。被问及AI导致人类终结的概率是否仍在10%到20%之间时，他没有否认，但选择了一种带有宿命感的乐观态度——“如果火箭有10%到20%的概率会爆炸并杀死你，你还会坐上去吗？会的。”他预测到2036年左右，人类最有可能迎来一个“物质极为丰富的时代”。在安全治理方面，马斯克提出了一个“接地气”的方案：让竞争对手互相审查模型，每两周开会一次，发布前给对手一两周的前瞻体验时间，只有当某家公司无视同行指出的重大风险时，政府才需要介入。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月25日，马斯克在X上宣布，下个月起X平台涉及全部系统的代码将对外开源，并邀请第三方审计机构来核对线上运行版本是否与公开代码一致。这比2023年局部开源推荐算法的覆盖范围大得多——不是某个单独模块，而是覆盖整个技术栈的全部代码。马斯克表示“只有完全透明才能赢得信任”。分析指出，若X兑现承诺，将成为全球社交平台中透明度最高的亿级用户产品，直接推高整个行业的开放标准。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#059669;">值得关注：</strong>马斯克在访谈中自嘲“当初为了对抗谷歌对AI的垄断而参与创建OpenAI，结果反而加速了全行业的军备竞赛”——这不是自谦，而是对当前AI竞争格局的清醒认知。当OpenAI从非营利变成估值数千亿美元的闭源公司，当Anthropic从OpenAI分裂出来成为另一个闭源旗舰，马斯克手中能打的牌只剩开源和透明。X的全量开源和xAI的Grok Build开源，本质上是同一条路线的两个侧面——既然在闭源赛道上赢不了，就换个规则把牌桌掀了。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#0d9488;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+AI降本增效显效：游戏公司上半年业绩集体翻倍
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI软件 · 游族网络 × 巨人网络</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月25日消息，A股多家游戏公司上半年业绩预喜。游族网络预计净利润2亿至3亿元，同比增长298%至498%；巨人网络预计净利润20亿至22亿元，同比增长157%至183%。AI已成为游戏研运的新变量：游族网络已建成覆盖前中后台全业务链的AI赋能体系，AI实现了70%游戏测试用例自动生成，大幅缩减测试周期，素材生产效率提升3至5倍。巨人网络的2D美术资产AI辅助生成占比已超过80%，其原生AI玩法《超自然行动组》累计生成“AI假人”超29亿。微信小游戏月活达到6.54亿，同比增长32.7%，成为新增量渠道。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+游族网络的做法值得拆解：公司对全员实施“Token无限额”策略，员工一键登录YOOZOO.AI平台即可调用近50个主流大模型，不设使用门槛和用量限制。翻译成本直接打了二折，但真正的价值不在省钱——翻译时同步调用十几年积累的玩家行为数据和运营数据，让模型判断同一句台词在东南亚用什么语气、在欧洲如何措辞，翻译从语言转换变成了数据驱动的决策过程。素材投放后点击率和转化率数据再度回流平台，形成自我强化的闭环。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#0d9488;">值得关注：</strong>当AI行业还在争论“大模型怎么赚钱”时，游戏公司已经用利润表给出了答案。游族和巨人不是把AI当技术部门的项目，而是当全公司的基础设施——当每个岗位的人都在用AI、每个环节都在产出数据、每条数据都在反哺模型，AI就从“降本工具”变成了“增长引擎”。净利润增长3到5倍的数字，比任何PPT上的愿景都有说服力。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#4f46e5;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+Grok Build开源：xAI编程Agent，9天2万Star，但起因是隐私风波
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI Coding · xAI</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月14日，xAI以Apache 2.0协议开源了Grok Build——一款99.6%用Rust编写的终端AI编程Agent，发布9天内在GitHub斩获超2.1万Star和4092个Fork。Grok Build能理解代码库、编辑文件、执行Shell命令、搜索网页，底层由grok-4.5模型驱动，同时支持通过配置文件接入任意OpenAI兼容的第三方模型。仓库包含40多个Rust crate，覆盖TUI渲染、沙箱隔离、子Agent协调和工具链等完整功能，代码量约84.4万行，规模接近OpenAI Codex的95万行。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+但开源的时间节点耐人寻味。就在开源公告前三天，研究人员发现Grok Build在运行过程中会将整个用户Git仓库上传至xAI的Google Cloud存储桶，即使开启隐私设置也无法阻止——有用户报告自己的SSH密钥、密码管理器数据库都被上传。马斯克回应称所有上传数据将被删除，xAI承诺7月12日起默认关闭保留并删除此前数据。开源后，代码库中仍能看到Google Cloud上传代码的痕迹（upload/gcs.rs），已被硬编码为返回不可用错误——被禁用，而非删除。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#4f46e5;">值得关注：</strong>Grok Build的开源不是慷慨的馈赠，而是隐私风波后的补救措施。但它确实给了开发者一个难得的机会——完整审视一个生产级Coding Agent的内部架构。当前AI编程工具赛道竞争已白热化：Claude Code不开源、Codex CLI刚开源Rust版本、jcode主打多会话持久记忆。Grok Build选择开源路线，加上马斯克同时宣布X全量代码开源和所有涉及X系统的代码将开源接受审计，xAI正在把“开源”当作差异化武器——在闭源赛道赢不了，就在透明度上赢。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#d97706;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+百度开源LoongForge：面向具身智能的高性能训练框架
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI Coding · 百度白鸽团队</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+百度白鸽团队开源了LoongForge——一款模块化、可扩展、高性能的训练框架，支持LLM、VLM、扩散模型和具身智能模型的训练。框架覆盖预训练、持续预训练和SFT，核心LLM和VLM栈基于Megatron-LM深度增强，具身模型采用独立的torch原生技术栈，原生支持NVIDIA GPU与昆仑芯XPU。在开源前，LoongForge的前身是AIAK-Training-LLM——百度百舸的训练加速栈，已在教育、计算机视觉和具身AI等企业客户的生产训练中落地，通常带来30%至50%的加速，最大生产训练规模达到5000+ XPU。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+2026年7月，LoongForge新增了DeepSeek v4 flash/pro训练支持和VLA子系统，提供主流具身模型如GR00T N1.6的训练支持，Pi0.5与GR00T训练实现60%以上加速。此前5月已加速Wan 2.2训练116%，新增Kimi K2.5/K2.6训练和INT4/NVFP4量化能力。框架的具身智能子系统覆盖了从感知模型到行动模型的完整训练链路，解决了多模态和机器人控制模型训练的工程化难题。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#d97706;">值得关注：</strong>具身智能的核心瓶颈之一是训练基础设施的缺失——大语言模型有成熟的训练框架和海量文本语料，但人形机器人训练所需的视觉、触觉、力觉、动作轨迹多模态数据采集成本高、产出效率低，训练框架也远不如LLM成熟。LoongForge把具身模型训练和LLM/VLM训练放在同一框架内，意味着百度试图把“大模型能力”和“机器人控制”统一到同一套训练基础设施上——当训练框架本身成为开源标准，它锁定的是下一代具身智能开发者的工作流。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#db2777;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+人形机器人“量产元年”：进厂打工，投资回报周期18个月
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">具身智能 · 艾图 × 均普智能 × 智元</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+2026年被业界视为“人形机器人量产元年”。工信部、国务院国资委联合印发通知启动年度人形机器人与具身智能实景实训专项行动，提出到年底“带动形成万台级规模落地能力”。全年中国人形机器人整机产量有望首次突破10万台——2024年全球出货量仅2300台，2025年1.33万台，一年后这个数字正在走向10万台级别的指数级爆发。摩根士丹利年内两度上调中国出货量预测，从年初1.4万台到6月2.8万台再到7月5万台。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+真实场景的进展比数字更有说服力。杰克科技旗下“艾图”人形机器人已在多家国内服装工厂落地，面向模板机上下料、贴袋机布料摆放等重复性工序，裁片分离成功率达97%，缝纫合格率超过98%，以此效率测算投资回报周期约18个月。均普智能旗下G2机器人在国内头部3C企业完成8小时2283次任务零失误的实战测试，在汽车安全产线上将安全带铝制器件攻丝工序从18秒提升至最快12.9秒，效率提升约三分之一。智元第1.5万台精灵G2已下线交付龙旗科技工厂，从1万台到1.5万台仅用时2个多月。宇树R1售价已降至2.99万元起。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#db2777;">值得关注：</strong>行业判断2026至2028年是单工序能力验证期，2028至2030年才进入多工序协同的规模化期。但真实的产线数据已经给出了比预期更乐观的信号——当投资回报周期被压缩到18个月、当单台售价跌破3万元、当3C产线上8小时零失误成为现实，人形机器人的商业化拐点可能比行业共识来得更早。衡量标准已经从“能不能做”变成了“能不能持续做、大批量做”，而答案是：已经在做了。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:17px;font-weight:700;color:#111827;margin-bottom:14px;">
+<span style="display:inline-block;width:6px;height:18px;background:#0891b2;border-radius:3px;vertical-align:middle;margin-right:8px;"></span>
+AI走进日常：机器人开始掌勺，智慧食堂市场突破410亿元
+</p>
+<p style="font-size:13px;color:#9ca3af;margin-bottom:12px;margin-top:-8px;">AI软件 · AI餐饮</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+7月25日，央视新闻聚焦AI走进餐饮场景：北京亦庄机器人餐厅、海淀AI数智食堂全流程由智能设备完成，炒菜机器人1小时可完成500人份餐食。南京一位23年经验的总厨转型“教AI做菜”，一年教会AI大厨3000多道菜，收入涨超三成。国内智慧食堂市场规模今年将突破410亿元，2025年全球餐饮AI市场达150亿美元同比增长38.9%。AI餐饮催生了“数字菜品研发师”等新岗位。成都也在APEC数字周期间披露新型工业化行动方案，深化人工智能+行动，拓展工业大模型、具身智能等高价值场景。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+这不是孤例。游族网络在WAIC上分享了“模数共振”的实践——把AI从技术部门的项目变成全公司基础设施，翻译成本打二折，但价值在于翻译时同步调用玩家行为数据让模型做决策。这些场景的共同点是：AI的价值不是在实验室里跑分跑出来的，而是在真实的商业闭环中一笔一笔账算出来的。当餐饮、游戏、纺织、汽车这些最“接地气”的行业开始用AI降本增效并看到回报，AI就不再是技术叙事，而是经济叙事。
+</p>
+<p style="font-size:16px;margin-bottom:16px;text-align:justify;color:#374151;">
+<strong style="color:#0891b2;">值得关注：</strong>AI的渗透正在从“写代码”和“做PPT”向更广泛的实体经济延伸。当总厨教AI做菜、当游戏测试用例70%自动生成、当服装产线上机器人裁片分离成功率97%，AI创造的已经不是“效率提升”，而是新的工作方式——人类从执行者变成了监督者和规则制定者。410亿元的市场规模，对应的是一个正在被重新定义的产业边界。
+</p>
+<p style="border-top:1px solid #e5e7eb;margin:28px 0 24px 0;"></p>
+<p style="font-size:16px;margin-bottom:20px;text-align:justify;color:#374151;">
+把今天这十件事放在一起看，会发现它们构成了一个完整的链条：上游是三星SK海力士用8800亿美元锁定HBM供应，中游是硅基流动们把算力转化为标准化的Token服务，模型层是Anthropic把旗舰性能砍到半价，工具层是Grok Build和LoongForge争相开源，应用层是游戏公司和餐饮行业用AI算出了真金白银的回报，安全层是马斯克呼吁巨头互审并宣布X全量开源，政策层是25家企业联名要保护开放权重。从芯片到餐桌，从模型到工厂，AI的每一个环节都在被重新定价、重新分配、重新定义。当旗舰模型卖到半价、当万亿资本押注芯片、当开源成为竞争武器，真正被重写的不是某个产品的价格标签——而是整个AI产业的底层规则。
+</p>
+</body>
+</html>
