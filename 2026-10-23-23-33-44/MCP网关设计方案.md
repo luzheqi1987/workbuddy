@@ -63,7 +63,7 @@
 | 本地缓存              | Caffeine                                          | 注册表快照 + 后端工具列表缓存                                         |
 | 限流                | Redis（哨兵/Cluster）+ Lua 令牌桶                        | 集群限流，Redis 为唯一事实源                                        |
 | 鉴权                | API Key（Spring Security）                          | 入口校验调用方；网关→后端默认用固定 Key                                   |
-| 凭证加密              | AES-GCM（`v1:` + base64(IV‖密文‖tag)），主密钥 KMS 托管     | `mcp_gw_auth_scheme.default_credential`；取回明文的受控通道见 7.1-C |
+| 凭证存储              | **明文随机字符串**（网关签发 `gw_sk_` + 256 bit 随机）           | `mcp_gw_auth_scheme.default_credential`；取舍与补偿控制见 7.1-C    |
 | 观测                | Micrometer + Prometheus + 结构化日志                   | 三面全路由统一埋点，**以 `sys_code` 为主维度**：调用量、时延、错误、拒绝、告警          |
 | 部署                | Docker / K8s Deployment + HPA                     | **MCP 面无状态**，可任意扩缩                                       |
 
@@ -295,7 +295,7 @@ CREATE TABLE mcp_gw_service (
 | `scheme_key`              | VARCHAR(64)   | ✅ 唯一 | -          | 方案别名，如 `OrderApiKey`                                                                                                                                                                                                                                                    |
 | `api_in`                  | VARCHAR(8)    | 否    | header     | Key 放在请求哪里：`header` / `query` / `cookie`。**`direction=INBOUND` 的行只能用 `header`**（入口凭证走 query 会泄进 access log 与 `Referer`），其余取值留给后端要求的 `OUTBOUND` 场景；网关启动时校验，违规的行拒绝加载并告警（见 7.1-A）                                                                                          |
 | `api_name`                | VARCHAR(64)   | ✅    | X-API-Key  | 位置对应的名字：头名（如 `X-API-Key`）或查询参数名（如 `api_key`）                                                                                                                                                                                                                            |
-| `default_credential`      | VARCHAR(500)  | 否    | -          | 默认 Key 值，**AES-GCM 加密存储（`v1:` 前缀 + base64(IV‖密文‖tag)，见 7.1-C）**；管理接口列表返回一律脱敏，取原文只能走 7.1-C 的受控通道                                                                                                                                                                         |
+| `default_credential`      | VARCHAR(256)  | 否    | -          | 默认 Key 值，**明文随机字符串**（网关签发，`gw_sk_` + 256 bit 随机，见 7.1-C）。取舍与补偿控制也在 7.1-C：**只放网关自己签发的串，第三方私钥 / 证书一律走外部密钥系统的引用别名**；管理接口列表返回一律脱敏；轮换 = 覆盖写这一列 |
 | `qpm_limit`               | DECIMAL(10,4) | 否    | -          | **该调用方的限流配额**，单位 **次/分钟（QPM）**，**允许小数**（每小时 10 次填 `0.1667`，见 7.2 单位一节），对应 7.2 的 sys 档。**只对 `direction=INBOUND` 的行有效**，`OUTBOUND` 行填了也不生效。`INBOUND` 系统与 Key 一一对应（不做密钥轮换），所以配额挂在 Key 行上不存在一对多的歧义。NULL = 回退到全局兜底值，**不表示不限**                                                |
 | `burst`                   | INT           | 否    | -          | 令牌桶容量（允许的瞬时突发，单位"次"，**整数**）。NULL 时取 `ceil(qpm_limit / 60)`，最小 1                                                                                                                                                                                                         |
 | `description`             | VARCHAR(255)  | 否    | -          | 说明                                                                                                                                                                                                                                                                      |
@@ -310,7 +310,7 @@ CREATE TABLE mcp_gw_auth_scheme (
   scheme_key          VARCHAR(64) NOT NULL COMMENT '方案别名，唯一',
   api_in              VARCHAR(8)  DEFAULT 'header' COMMENT 'Key位置: header/query/cookie',
   api_name            VARCHAR(64) NOT NULL COMMENT '头名或查询参数名，如 X-API-Key',
-  default_credential  VARCHAR(500) COMMENT '默认Key(AES-GCM加密: 版本前缀+base64(IV+密文+tag)，主密钥KMS托管)',
+  default_credential  VARCHAR(256) COMMENT '默认Key(明文随机串，网关签发，第三方凭据不入库)',
   qpm_limit           DECIMAL(10,4) COMMENT 'INBOUND行: 该调用方sys档配额(次/分钟，可小数)，NULL=回退全局兜底，非不限',
   burst               INT COMMENT '令牌桶容量(次，整数)，NULL=ceil(qpm_limit/60)，最小1',
   description         VARCHAR(255),
@@ -332,7 +332,7 @@ CREATE TABLE mcp_gw_auth_scheme (
 | `uk_scheme_key(scheme_key)`                 | 方案别名唯一；管理员引用某个方案时的防重                                                                                    | 人写的别名，必须唯一否则引用歧义                                                                                                      |
 | `idx_dir_sys(direction, sys_code, deleted)` | **入口 Key 索引的构建查询**：`WHERE direction='INBOUND' AND deleted=0`（7.1-A 启动时构建「值 → 登记行」内存索引）；管理面按方向列出所有注册 Key | `direction` 是这个维度的第一刀——同一个 `sys_code` 在 INBOUND 与 OUTBOUND 各有一行是常态（2.2），少了它两类 Key 会混在一起；末列带 `deleted`，"取有效行"可在索引内完成过滤 |
 | `idx_sys_code(sys_code)`                    | 管理面"列出某系统登记了哪些 Key"                                                                                     | 复合键 `(direction, sys_code, deleted)` 的最左前缀不匹配这个查询，**单独保留这一列不是冗余**                                                     |
-| `idx_version(version)`                      | 缓存增量刷新：`WHERE version > :last`（2.7）                                                                     | 与注册表同源。**注意不给凭证建索引**：7.1 的比对走内存里的 SHA-256 反查，`default_credential` 是密文列，建索引既无用又等于在索引里留下 Key 的前缀信息                      |
+| `idx_version(version)`                      | 缓存增量刷新：`WHERE version > :last`（2.7）                                                                     | 与注册表同源。**注意不给凭证建索引**：7.1 的比对走内存里的 SHA-256 反查，不打库，所以索引没有服务对象；而给一列明文凭证建索引，等于把每把 Key 的原文再抄一份到索引文件里去 |
 | 示例数据（值为明文示意）：                               |                                                                                                         |                                                                                                                       |
 
 | direction  | sys_code   | scheme_key        | api_in / api_name      | default_credential | 本行限流配额（7.2）                       |
@@ -855,7 +855,7 @@ PARTITION BY RANGE (TO_DAYS(created_at)) (
 1. **每个索引都要能说出它服务哪条 SQL**，说不出来就删掉。这张网关 schema 里只有两类查询：注册表的**整体加载与增量刷新**、调用日志的**按调用方 / 服务 / 单号回溯**，其余都是推测性优化；
 2. **四张注册表统一有 `idx_version(version)`** —— 它们都是"读多写少、整体进内存"的表（2.7），唯一的高频 SQL 就是 `WHERE version > :last`。**这几张表本身只有几百到几千行**，索引的实际收益有限，留着是为了口径统一和方向正确；**真正吃索引压力的只有 `mcp_gw_call_log`**；
 3. **低区分度列不单独建索引**：`status` / `effect` / `enabled` / `face` 只有几个枚举值，单列索引筛不掉多少行。要么作为复合索引的后缀（`idx_status(status, deleted)`、`idx_expire(status, expire_at)`），要么干脆不建（`face` / `route`）；
-4. **列名="我要按它查"不等于要建它**：`default_credential`（密文、比对在内存里做）、`args_digest` / `input_schema` / `request_template`（JSON，不做检索条件）、`deleted` 单列（几乎总是跟着主键前缀出现）—— 全部不建；
+4. **列名="我要按它查"不等于要建它**：`default_credential`（明文凭证，比对在内存里做，写进索引等于再抄一份原文）、`args_digest` / `input_schema` / `request_template`（JSON，不做检索条件）、`deleted` 单列（几乎总是跟着主键前缀出现）—— 全部不建；
 5. **索引替代不了外键**：这里全是逻辑引用、没有物理外键，唯一性靠 `uk_*` 兜住，一致性靠 2.7 的软删与注册前校验。索引只负责快，不负责对。
 
 > **全库统一：表间关联一律用 `id`，不用名字。** `mcp_gw_tool.service_id`、`mcp_gw_grant.service_id`、`mcp_gw_service.default_upstream_scheme_id`、`mcp_gw_call_log` 的 `service_id` / `tool_id` 都是同一条规则——**名字是可变的业务值，主键才是稳定的身份**。服务改名不会牵动任何引用关系，也不会出现"旧名字被新服务复用，历史关联挂到别人头上"这种越权型故障。
@@ -1279,7 +1279,7 @@ public class McpAggregationHandler {
 关键在于**必须按值反查，不能按头名索引，也不能查库**：
 
 - 头名一定会撞车（所有调用方默认都用 `X-Gateway-Key`，也不排除有人配 `X-API-Key`），值不会。走「头名 → 方案」映射，同名头的两个系统没法区分，最终还是要退回逐行比对；
-- 每行请求打一次 DB（`WHERE default_credential = ?`）有四个问题：热路径上多一跳；凭证是 AES-GCM 密文列没法直接等值匹配，只能全表捞回逐行解密；IV 每次随机也让密文无法用于等值查询；逐行解密比对本身就是条随行数增长的时间侧信道。
+- 每行请求打一次 DB（`WHERE default_credential = ?`）有三个问题：热路径上多一跳；这一列故意不建索引，语句会退化成全表扫，行数一涨它就成了新的耗时大户；最要命的是 **SQL 语句会带着凭证原文进 MySQL 的 general log / slow log / binlog 体系**，等于绕过"凭证原文不入日志"的约束（7.4）。
 
 因此启动时把 `direction=INBOUND AND deleted=0` 的行建成一张内存索引：
 
@@ -1381,105 +1381,49 @@ private Result tryAuthenticate(HttpServletRequest req, String face) {
 
 - **网关 → 后端（链路二 / 三）**：默认固定 Key（`direction=OUTBOUND`：工具 `security.scheme_id` > 服务 `default_upstream_scheme_id` > 方案 `default_credential`），附加 **`X-Gateway-Sys-Code`（网关按权威值重写）** / `X-Request-Id`；仅 `credential_passthrough=1` 时透传白名单内的头；
 - **网关 → 原生 MCP 后端（链路一）**：凭证装配在 transport 层、随连接池复用，**没有 per-tool 覆盖，也没有调用方身份头**（3.4）；
-- 凭证的存储格式、主密钥托管与**受控取回通道**见 **7.1-C**；管理面列表接口只返回脱敏值；方案只允许软删，禁止物理删除。
+- 凭证的生成规则与明文存储的**补偿控制**见 **7.1-C**；管理面列表接口只返回脱敏值（原文只在单条详情里返回）；方案只允许软删，禁止物理删除。
 
 > **两个方向互不干涉**：`INBOUND` 行只用于校验进来的调用方，`OUTBOUND` 行只用于发给后端的凭证；**监控、限流、审计里的 `sys_code` 一律取 `INBOUND`**（2.2），把后端系统码当成调用方来统计是最典型的一类口径串味。
 
-#### C. 凭证的存储与取回（怎么看到原始数据）
+#### C. 凭证的生成、存储与轮换（一期：明文随机串）
 
-`default_credential` 里既有调用方的入口 Key、也有发给后端的出口凭证——这是全系统**唯一一处必须加密存储的数据**。加密只是手段，真正要设计的是"谁能把它变回明文"。
+**决策：一期不做加密存储。** `default_credential` 里存的就是**网关自己签发的随机字符串**原文——没有密文、没有主密钥、也没有「怎么看到明文」这个问题。
 
-**C-1 存储格式**
-
-```
-default_credential = "v1:" + base64( IV(12B) || ciphertext || GCM tag(16B) )
-```
-
-IV 和认证标签**跟着密文放在同一列**，库里没有任何额外字段；最前面的 `v1:` 是主密钥版本号（C-6）。常规 Key 是 32~64 字符，密文 60~90 字节，base64 后约 80~120 字符，`VARCHAR(500)` 留足余量。**明文长度上限设 256 字符**，超出的（如 OAuth 私钥、mTLS 证书）不进这一列，交给外部密钥库，本列只存引用别名。
-
-**C-2 能不能看到明文，等价于：能不能碰到主密钥**
-
-AES-GCM 是认证加密，**IV 与 tag 并没有被藏起来**，唯一不在库里的是主密钥（KEK，由 KMS / 环境变量托管）。这带来一条很干脆的判定：
-
-- **有 KEK**：`Cipher.getInstance("AES/GCM/NoPadding")` 一次调用就得到明文，没有任何秘技；
-- **没有 KEK**：密文改动任意一个 bit 都会抛 `AEADBadTagException`，**不存在恢复明文的办法**。
-
-这正是要的结果——DBA 查库、备份文件泄露、SQL 注入拖走整张表，三种情况下攻击者都只能拿到一堆不可用的字节。**"我看不到原始数据"不是加密的副作用，是它的交付物**；所以运维要恢复明文，必须显式地走下面那条受控通道，而不是想办法绕过。
-
-**C-3 三种诉求，只有一种真的需要明文**
-
-| 诉求                        | 要不要明文 | 怎么做                                                                                                          |
-| ------------------------- | ---- | ------------------------------------------------------------------------------------------------------------ |
-| 确认某把 Key 是不是库里这一把            | **不要** | 让调用方按原样再发一次请求，用 L1 日志里的 **Key 指纹**（SHA-256 前 8 位，7.1-A）比对即可。或者管理面提供 `POST /internal/auth-schemes/{id}/verify`，请求体带候选明文，**只返回 true / false** |
-| 作废、更换凭证                    | **不要** | 直接覆盖写 `default_credential`，或软删该行。7.1-A 的内存索引刷新后即时生效                                                           |
-| 后端凭证原值丢失，需去第三方平台核对         | **要**  | 走 C-4 的受控取回通道                                                                                                  |
-
-第一种诉求最容易被人下意识地做成"把 Key 解出来肉眼对比"——**这一步是纯亏损**：明文一旦出现在终端或聊天窗口，就必须当作已泄露，而验证根本不需要它。
-
-**C-4 受控取回通道（二选一，不要两条都开）**
-
-- **首选：离线 CLI**。运维堡垒机上跑 `gateway-admin credential reveal --id=42 --reason="工单 #1234"`，输出直接打到终端。**好处是产品里压根不存在"把后端密码吐出来"的 HTTP 端点**，管理面被攻破也不会连带泄露后端凭证；
-- **次选：管理面接口** `POST /internal/auth-schemes/{id}/reveal`，必须同时满足：
-  - 独立权限点 `credential:reveal`，**与凭证的读写权限分开**——能改 Key 不代表能读 Key；
-  - 请求体强制带 `reason`，且 15 分钟内同一操作人的第二次请求需要再次确认；
-  - **响应里的明文不得写入 access log、不得打进 L1 结构化日志、不得进 L2 `mcp_gw_call_log`**。这条必须显式禁掉，否则"最方便的旁路"会把加密的意义整个抵消掉——常见的事故是加了全方位的请求响应日志，凭证变相变成明文存储；
-  - 每次 reveal 写**独立审计流水**（谁 / 何时 / 哪一行 / reason），且这条流水本身的删除权限不开放给同一批人；
-  - 限流 + 告警：短时间内连续 reveal 多行 = 有人在拖库，直接告警。
-- **禁止**：批量导出接口、把明文贴回配置文件或环境变量、截图发群。"反正最后要发群里核对"的场景，正确做法是重新签发一把 Key，而不是取出旧的。
-
-**C-5 加解密实现口径**
+**C-1 生成规则**
 
 ```java
-public final class CredentialCodec {
-    static final String ALG = "AES/GCM/NoPadding";
-    static final int IV_LEN = 12, TAG_BITS = 128, MAX_PLAIN = 256;
-    static final String CURRENT_VERSION = "v1";          // 密文列里实际写的是 "v1:base64(...)"
-
-    private final Function<String, SecretKey> kekByVersion;   // KMS 托管，按版本取 KEK，不在代码/配置里落盘
-
-    String encrypt(long schemeId, String direction, String plain) {
-        if (plain == null || plain.length() > MAX_PLAIN) throw new IllegalArgumentException("credential too long");
-        byte[] iv = new byte[IV_LEN];
-        SecureRandom.getInstanceStrong().nextBytes(iv);
-        Cipher c = Cipher.getInstance(ALG);
-        c.init(Cipher.ENCRYPT_MODE, kekByVersion.apply(CURRENT_VERSION), new GCMParameterSpec(TAG_BITS, iv));
-        c.updateAAD(aad(schemeId, direction));
-        byte[] body = c.doFinal(plain.getBytes(UTF_8));       // 输出已内含 16B tag
-        String b64 = Base64.getEncoder().encodeToString(
-                ByteBuffer.allocate(iv.length + body.length).put(iv).put(body).array());
-        return CURRENT_VERSION + ":" + b64;                   // 版本前缀在这里拼，别漏
-    }
-
-    String decrypt(long schemeId, String direction, String stored) {
-        int sep = stored.indexOf(':');
-        if (sep < 0) throw new IllegalStateException("credential missing version prefix");
-        String version = stored.substring(0, sep);            // 滚动 KEK 时按它选主密钥（C-6）
-        byte[] raw = Base64.getDecoder().decode(stored.substring(sep + 1));
-        Cipher c = Cipher.getInstance(ALG);
-        c.init(Cipher.DECRYPT_MODE, kekByVersion.apply(version),
-               new GCMParameterSpec(TAG_BITS, Arrays.copyOfRange(raw, 0, IV_LEN)));
-        c.updateAAD(aad(schemeId, direction));                // 与加密时不同则校验失败
-        return new String(c.doFinal(raw, IV_LEN, raw.length - IV_LEN), UTF_8);
-    }
-
-    private static byte[] aad(long schemeId, String direction) {
-        return ("mcp_gw_auth_scheme:" + schemeId + ":" + direction).getBytes(UTF_8);
-    }
-}
+String cred = "gw_sk_" + Base64.getUrlEncoder().withoutPadding()
+        .encodeToString(SecureRandom.getInstanceStrong().nextBytes(32));   // 256 bit，远高于 7.1-A 的 128 bit 下限
 ```
 
-三条容易写错的地方：
+32 字节随机 + Base64URL 是 43 字符，加前缀固定 50 字符以内，`VARCHAR(256)` 留足余量。**熵必须来自 `SecureRandom`**：禁止自增、时间戳、业务 ID 派生的任何可预测序列——7.1-A 的"熵 ≥ 128 bit、不可猜"这条不会因为改成明文而放松，它现在是唯一还在挡爆破的东西。
 
-- **IV 每次随机是刻意的**：同一把 Key 加密两次得到不同密文，密文看不出两个系统是否共用同一把 Key。代价是**不能靠"密文相等"判断两行凭证是否相同**——要判重就在写入时额外存一次明文哈希（同样只需支持 true/false 比对，不需要取出原文）。
-- **AAD 必须绑定行身份**：把 A 行的密文整段复制到 `sys_code` 更高权限的 B 行，是串权的捷径。绑上 `schemeId + direction` 后，挪过去的行解密会直接校验失败。**放进 AAD 的字段必须终身不变**，否则行一改就永久解不开了。
-- **不要把 KEK 放进同一个库、同一份配置、同一个 Git 仓库**；本地调试和 CI 用独立的 fixture 密钥，**禁止为测试留 `skip-decrypt` 开关**——这种开关几乎必然被带到生产。
+**C-2 适用范围：本列只放网关自己签发的串**
 
-**C-6 KEK 本身的滚动**
+这条不是建议，是明文存储能成立的前提。任何**第三方真实凭据**——OAuth `client_secret`、私钥、mTLS 证书、第三方 SaaS 的 Secret——一律不进这一列，登记为引用别名（`kms:ordersys-secret`），值留在外部密钥管理系统。
 
-换主密钥 = 读出全表 → 旧 KEK 解密 → 新 KEK 重新加密 → 写回，必须能灰度。为此**给密文加一个版本前缀**（如 `v1:base64...`），过渡期新写入用 `v2`、旧行读到 `v1` 时用旧 KEK 解，两者并存；滚动完成后回收旧 KEK。没有版本前缀的话，切换 KEK 只能在停机窗口内一次性完成。
+区分标准是**出事后能不能由网关单方面止损**：网关签发的串泄露后覆盖写一行即刻生效，影响不出本网关；第三方密钥泄露会牵连网关以外的系统，轮换动作也不在网关手里，把它明文放在这里是**押上了自己控制不了的东西**。
 
+**C-3 明文意味着什么，以及替代加密的补偿控制**
 
+后果说白了就一句：**谁能读这一列，谁就能用这把凭证**。DBA 查库、备份文件泄露、SQL 注入拖走整张表，三种情况下攻击者直接拿到可用的串，没有任何缓冲。加密在这个位置本来提供的价值是"让泄露面收敛到 KEK"，放弃它之后控制点必须挪到别处：
 
+- **库权限**：应用账号最小权限，能读这列的账号是可数的，不给业务方只读账号；
+- **静态存储**：依赖数据库自身的落盘加密与备份管控，不由网关承担；
+- **管理面脱敏**：列表接口一律返回脱敏值（`gw_sk_…ab12`），原文只在单条详情里返回；
+- **日志**：凭证原文在 access log / L1 / L2 三种载体里都不出现（7.4）——明文存储之后，**这条是软件侧仅剩的一道防线**；
+- **轮换**：明文让轮换退化成 `UPDATE` 一行覆盖写，索引刷新后即时生效。**泄露后的处置动作就是重签一把**（7.1-A），这也是明文唯一比加密省事的地方；
+- **审计**：本列的每次创建 / 覆盖写入都要进审计（谁 / 何时 / 哪一行），不留"悄悄改了 Key"的窗口。
+
+**C-4 明确不做**
+
+一期不做：**AES-GCM 存储加密、KMS 托管 KEK、密文版本前缀、按版本取 KEK、AAD 绑行身份、KEK 滚动流程、受控取回通道（离线 CLI 与 `reveal` 端点及其独立权限点、审计流水）**。这一整套共同解决的是"明文想留在库里却又不想让人看懂"这一个问题；接受明文之后它们失去了保护对象，留着只是把复杂度挂在读写路径上。
+
+其中**取回通道被删掉是自洽的**：那条通道存在的前提是"库里看不到原文"，而现在原文就在库里，不需要专门挖一条路把它拿出来。
+
+**C-5 将来要改成加密时的扩展点**
+
+改造面只有一处：**凭证的读写**（注册 / 更新写入、启动时加载索引读出）前面加一道 `CredentialCodec`。生成规则（C-1）与适用边界（C-2）都不用变，要补的是 KEK 从哪来（内网没有 KMS 时用一个环境变量就够，不必引入 KMS）以及存量明文行怎么灰度重写。**注意届时再回头补 C-3 的补偿控制已经晚了**——加密不会让日志脱敏变得不必要，7.4 那条硬约束无论采用哪一档都必须保留。
 
 ### 7.2 集群限流
 
@@ -1701,10 +1645,10 @@ L2 异步写入、失败不阻断主流程、不影响 latency；表结构与字
 **凭证原文在日志的任何形态里都不出现**
 
 - **Key 原文永不入日志**：入站 `X-Gateway-Key` 只留 Key 指纹（SHA-256 前 8 位），request/response body 与 headers 的通用打印必须对它例外。这条要覆盖住**三种载体**：HTTP access log（通常配在最底层，最容易漏开口子）、L1 结构化日志、L2 调用日志——**新增任何一个"打印全部请求头"的诊断开关之前，先确认它是否会碰到凭证**；
-- **7.1-C 的 reveal 响应**是系统里唯一产出明文的地方，**明确排除在 access log / L1 / L2 之外**，只写进那条不可删的独立审计流水；
+- **管理面单条详情接口**是系统里唯一返回明文的地方（7.1-C，列表接口一律脱敏），**明确排除在 access log / L1 / L2 之外**；
 - 注入到出站请求的后端凭证同样不打日志；后端响应体里若回带第三方 token，由响应摘要的脱敏规则截断。
 
-三者合起来是一条硬约束：**加密列不是唯一的防线，日志也不是**。只要有一处日志写了原文，密文存储就等价失败——数据库加密的意义在于让泄露面收敛到 KEK，而日志是最容易把这个收敛重新打散的地方。
+三者合起来是一条硬约束：**一期采用明文存储（7.1-C），日志就成了软件侧唯一那道防线**。凭证明文已经在库里，而日志是比数据库更容易被收集、备份、转发和分享出去的副本——只要有一处写了原文，就等于多了一份它本来不该存在的地方。将来若改成加密存储，**这条约束也不会因此放松**：数据库加密解决的只是"库文件泄露"，管不到日志。
 
 > **日志文本里可以同时有 id 和名字**：`service_id` / `tool_id` 是**关联键**（从 L1 跳 L2、L2 回查注册表都用它），名字只是给排障的人看的冗余字段，**不作为任何关联或聚合口径**——L1 是进 ES / Loki 的文本，多打一个名字没有代价；真正会漂移的表结构里则只用 id。这与 7.4-D「`route` 必须用模板、`sys_code` 必须取权威值」是同一类纪律：**用来join 和 group by 的字段必须稳定**。
 
@@ -1803,7 +1747,7 @@ mcp-gateway/
 3. **M3 链路二**：OpenAPI 解析生成工具（operationId 兜底、tag 白名单、数量上限、人工锁定）+ position / argsTo* 归位 + 转义与 SSRF 出站白名单 + 响应 / 错误模板；
 4. **M4 链路三**：REST 透传代理（头剥离、Host / XFF、`UriComponentsBuilder`、删除授权类请求头）+ 流式分支；
 5. **M5 治理**：两层 APIKEY 鉴权（**入口解析 `sys_code` 权威值 + 请求头比对，不一致 401**）、**调用方授权 `mcp_gw_grant`（fail-closed，含后台授权管理）**、调用链头规范（7.5：入站 `X-Sys-Code` 声明、出站 `X-Gateway-Sys-Code` 重写、响应回传 `X-Gateway-Trace-Id`）、**默认不透传 + 显式开关**、Redis 集群限流（唯一事实源；**配额落库，单位统一「次/分钟」**：`mcp_gw_auth_scheme.qpm_limit` 为 sys 档、`mcp_gw_service.qpm_limit` 为 tool 档，全局与 unknown 走环境变量）、**全局配额未配则拒绝启动**、DENIED 专项告警与 `deny_reason` 枚举；
-6. **M6 加固**：熔断阈值与冷却期调优、凭证加密托管、调用日志脱敏、模板与工具定义版本灰度、压测；
+6. **M6 加固**：熔断阈值与冷却期调优、**凭证存储方式复核（一期明文，7.1-C；必要时按 C-5 的扩展点改造为加密存储）**、调用日志脱敏、模板与工具定义版本灰度、压测；
 7. **M7（按需）**：多地址权重轮询 / 故障转移（默认单地址，非必需）；`endpoints` 规模变大时再评估是否拆出独立地址表；**L2 `mcp_gw_call_log` 异步落库**（有合规留存或查询需求时才开）。
 
 ---
