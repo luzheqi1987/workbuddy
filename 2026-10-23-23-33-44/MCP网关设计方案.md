@@ -50,22 +50,22 @@
 
 ### 1.1 技术选型
 
-| 层                 | 选型                                                | 说明                                                       |
-| ----------------- | ------------------------------------------------- | -------------------------------------------------------- |
-| 语言/框架             | Java 25 LTS + Spring Boot 3.x                     | 主栈；内网只批 JDK 21 时零改动切换（见下）                                |
-| MCP 协议（对外 Server） | 官方 MCP Java SDK `io.modelcontextprotocol.sdk:mcp` | 自行实现聚合，比自动装配更可控                                          |
-| MCP 协议（对内连原生后端）   | 官方 SDK 编程式 `McpSyncClient` 连接池                    | 动态发现必须手写连接，不能用启动时绑定固定后端的 starter                         |
-| 阻塞调用隔离            | 虚拟线程 + 信号量舱壁                                      | 同步调用不得占用容器线程；舱壁限并发，缺一不可                                  |
-| OpenAPI 解析        | `io.swagger.parser.v3:swagger-parser-v3`          | 解析 spec 生成工具 schema 与转发模板                                |
-| HTTP 转发           | `RestClient`（同步）/ `WebClient`（SSE 流式）             | REST→MCP、REST→REST 透传                                    |
-| 模板渲染              | 自研 `{{}}` 渲染 + JsonPath                           | 内置 `toJson` / `urlEncode` 两个必用函数                         |
-| 存储                | MySQL 8 + MyBatis-Plus                            | 服务 / 认证方案 / 工具注册表                                        |
-| 本地缓存              | Caffeine                                          | 注册表快照 + 后端工具列表缓存                                         |
-| 限流                | Redis（哨兵/Cluster）+ Lua 令牌桶                        | 集群限流，Redis 为唯一事实源                                        |
-| 鉴权                | API Key（Spring Security）                          | 入口校验调用方；网关→后端默认用固定 Key                                   |
-| 凭证存储              | **明文随机字符串**（网关签发 `gw_sk_` + 256 bit 随机）           | `mcp_gw_auth_scheme.default_credential`；取舍与补偿控制见 7.1-C    |
-| 观测                | Micrometer + Prometheus + 结构化日志                   | 三面全路由统一埋点，**以 `sys_code` 为主维度**：调用量、时延、错误、拒绝、告警          |
-| 部署                | Docker / K8s Deployment + HPA                     | **MCP 面无状态**，可任意扩缩                                       |
+| 层                 | 选型                                                | 说明                                                     |
+| ----------------- | ------------------------------------------------- | ------------------------------------------------------ |
+| 语言/框架             | Java 25 LTS + Spring Boot 3.x                     | 主栈；内网只批 JDK 21 时零改动切换（见下）                              |
+| MCP 协议（对外 Server） | 官方 MCP Java SDK `io.modelcontextprotocol.sdk:mcp` | 自行实现聚合，比自动装配更可控                                        |
+| MCP 协议（对内连原生后端）   | 官方 SDK 编程式 `McpSyncClient` 连接池                    | 动态发现必须手写连接，不能用启动时绑定固定后端的 starter                       |
+| 阻塞调用隔离            | 虚拟线程 + 信号量舱壁                                      | 同步调用不得占用容器线程；舱壁限并发，缺一不可                                |
+| OpenAPI 解析        | `io.swagger.parser.v3:swagger-parser-v3`          | 解析 spec 生成工具 schema 与转发模板                              |
+| HTTP 转发           | `RestClient`（同步）/ `WebClient`（SSE 流式）             | REST→MCP、REST→REST 透传                                  |
+| 模板渲染              | 自研 `{{}}` 渲染 + JsonPath                           | 内置 `toJson` / `urlEncode` 两个必用函数                       |
+| 存储                | MySQL 8 + MyBatis-Plus                            | 服务 / 认证方案 / 工具注册表                                      |
+| 本地缓存              | Caffeine                                          | 注册表快照 + 后端工具列表缓存                                       |
+| 限流                | Redis（哨兵/Cluster）+ Lua 令牌桶                        | 集群限流，Redis 为唯一事实源                                      |
+| 鉴权                | API Key（Spring Security）                          | 入口校验调用方；网关→后端默认用固定 Key                                 |
+| 凭证存储              | **明文随机字符串**（网关签发 `gw_sk_` + 256 bit 随机）           | `mcp_gw_auth_scheme.default_credential`；取舍与补偿控制见 7.1-C |
+| 观测                | Micrometer + Prometheus + 结构化日志                   | 三面全路由统一埋点，**以 `sys_code` 为主维度**：调用量、时延、错误、拒绝、告警        |
+| 部署                | Docker / K8s Deployment + HPA                     | **MCP 面无状态**，可任意扩缩                                     |
 
 > **JDK 版本策略**：编译目标用 `maven.compiler.release=21` 锁死，代码不引入任何 22+ 的 API——运行时给 JDK 25 跑 25、内网准入只批 21 就跑 21，切换零改动；若误用了 25 才有的 API，编译期即报错，版本决策被推迟到部署时刻且随时可逆。选 25 的理由：同为 LTS，且 JDK 24 起修复了虚拟线程在 `synchronized` 块内阻塞 pin 住载体线程的问题（JEP 491）——21 上需加 `-Djdk.tracePinnedThreads=full` 观测，25 上无此顾虑。
 
@@ -184,8 +184,6 @@
 > - 停用服务时先停用其下工具，再置服务 `DISABLED`，并 **`evict` 该服务名下所有地址的连接**——否则连接池里仍握着到已停用后端的连接，表现为"下线没生效"（2.1）；
 > - 保存 / 调用前校验 `service_id`、`scheme_id` 存在且未软删，不存在直接报错。
 
-
-
 ---
 
 ### 2.1 服务表 `mcp_gw_service`
@@ -295,7 +293,7 @@ CREATE TABLE mcp_gw_service (
 | `scheme_key`              | VARCHAR(64)   | ✅ 唯一 | -          | 方案别名，如 `OrderApiKey`                                                                                                                                                                                                                                                    |
 | `api_in`                  | VARCHAR(8)    | 否    | header     | Key 放在请求哪里：`header` / `query` / `cookie`。**`direction=INBOUND` 的行只能用 `header`**（入口凭证走 query 会泄进 access log 与 `Referer`），其余取值留给后端要求的 `OUTBOUND` 场景；网关启动时校验，违规的行拒绝加载并告警（见 7.1-A）                                                                                          |
 | `api_name`                | VARCHAR(64)   | ✅    | X-API-Key  | 位置对应的名字：头名（如 `X-API-Key`）或查询参数名（如 `api_key`）                                                                                                                                                                                                                            |
-| `default_credential`      | VARCHAR(256)  | 否    | -          | 默认 Key 值，**明文随机字符串**（网关签发，`gw_sk_` + 256 bit 随机，见 7.1-C）。取舍与补偿控制也在 7.1-C：**只放网关自己签发的串，第三方私钥 / 证书一律走外部密钥系统的引用别名**；管理接口列表返回一律脱敏；轮换 = 覆盖写这一列 |
+| `default_credential`      | VARCHAR(256)  | 否    | -          | 默认 Key 值，**明文随机字符串**（网关签发，`gw_sk_` + 256 bit 随机，见 7.1-C）。取舍与补偿控制也在 7.1-C：**只放网关自己签发的串，第三方私钥 / 证书一律走外部密钥系统的引用别名**；管理接口列表返回一律不脱敏；轮换 = 覆盖写这一列                                                                                                                              |
 | `qpm_limit`               | DECIMAL(10,4) | 否    | -          | **该调用方的限流配额**，单位 **次/分钟（QPM）**，**允许小数**（每小时 10 次填 `0.1667`，见 7.2 单位一节），对应 7.2 的 sys 档。**只对 `direction=INBOUND` 的行有效**，`OUTBOUND` 行填了也不生效。`INBOUND` 系统与 Key 一一对应（不做密钥轮换），所以配额挂在 Key 行上不存在一对多的歧义。NULL = 回退到全局兜底值，**不表示不限**                                                |
 | `burst`                   | INT           | 否    | -          | 令牌桶容量（允许的瞬时突发，单位"次"，**整数**）。NULL 时取 `ceil(qpm_limit / 60)`，最小 1                                                                                                                                                                                                         |
 | `description`             | VARCHAR(255)  | 否    | -          | 说明                                                                                                                                                                                                                                                                      |
@@ -332,7 +330,7 @@ CREATE TABLE mcp_gw_auth_scheme (
 | `uk_scheme_key(scheme_key)`                 | 方案别名唯一；管理员引用某个方案时的防重                                                                                    | 人写的别名，必须唯一否则引用歧义                                                                                                      |
 | `idx_dir_sys(direction, sys_code, deleted)` | **入口 Key 索引的构建查询**：`WHERE direction='INBOUND' AND deleted=0`（7.1-A 启动时构建「值 → 登记行」内存索引）；管理面按方向列出所有注册 Key | `direction` 是这个维度的第一刀——同一个 `sys_code` 在 INBOUND 与 OUTBOUND 各有一行是常态（2.2），少了它两类 Key 会混在一起；末列带 `deleted`，"取有效行"可在索引内完成过滤 |
 | `idx_sys_code(sys_code)`                    | 管理面"列出某系统登记了哪些 Key"                                                                                     | 复合键 `(direction, sys_code, deleted)` 的最左前缀不匹配这个查询，**单独保留这一列不是冗余**                                                     |
-| `idx_version(version)`                      | 缓存增量刷新：`WHERE version > :last`（2.7）                                                                     | 与注册表同源。**注意不给凭证建索引**：7.1 的比对走内存里的 SHA-256 反查，不打库，所以索引没有服务对象；而给一列明文凭证建索引，等于把每把 Key 的原文再抄一份到索引文件里去 |
+| `idx_version(version)`                      | 缓存增量刷新：`WHERE version > :last`（2.7）                                                                     | 与注册表同源。**注意不给凭证建索引**：7.1 的比对走内存里的 SHA-256 反查，不打库，所以索引没有服务对象；而给一列明文凭证建索引，等于把每把 Key 的原文再抄一份到索引文件里去                      |
 | 示例数据（值为明文示意）：                               |                                                                                                         |                                                                                                                       |
 
 | direction  | sys_code   | scheme_key        | api_in / api_name      | default_credential | 本行限流配额（7.2）                       |
@@ -779,6 +777,7 @@ public boolean granted(McpService svc, String rawToolName, Caller caller) {
 - **MCP_REMOTE 工具列表**：不在注册表，运行时枚举 + Caffeine 缓存（TTL 30~60s），后端工具变化时由后端推来的 `notifications/tools/list_changed` 或手动刷新触发失效。**注意这条的方向**：网关是作为 **client** 接收后端的通知、失效的是网关自己的缓存；作为 server，网关**不会**把这个事件推给调用方（无 capabilities），上行侧仍是纯无状态（1.2）；
 - **引用与级联（代码实现，无外键、无物理删除）**：注册 / 保存前校验 `service_id`、`scheme_id` 存在且未软删；停用服务时先停用其下工具；`mcp_gw_auth_scheme` 只允许软删 / 停用，删除前检查是否被引用。
 - **删服务要连带走 `mcp_gw_grant`**：`service_id` 是逻辑引用，没有外键兜底。软删服务时必须**同时软删 / 停用其下的 `mcp_gw_grant` 授权行**（与停用工具同理），否则会留下指向已删服务的悬挂授权；而服务名一旦被新服务复用，残留行还会让新服务继承旧授权。这一步由应用层在一个事务里完成，并在缓存失效后生效。
+
 
 
 
@@ -1251,6 +1250,7 @@ public class McpAggregationHandler {
 
 
 
+
 ### 7.1 鉴权：入口（`INBOUND`）与出口（`OUTBOUND`）
 
 #### A. 入口鉴权 —— 网关自己就是校验方
@@ -1425,6 +1425,7 @@ String cred = "gw_sk_" + Base64.getUrlEncoder().withoutPadding()
 
 改造面只有一处：**凭证的读写**（注册 / 更新写入、启动时加载索引读出）前面加一道 `CredentialCodec`。生成规则（C-1）与适用边界（C-2）都不用变，要补的是 KEK 从哪来（内网没有 KMS 时用一个环境变量就够，不必引入 KMS）以及存量明文行怎么灰度重写。**注意届时再回头补 C-3 的补偿控制已经晚了**——加密不会让日志脱敏变得不必要，7.4 那条硬约束无论采用哪一档都必须保留。
 
+
 ### 7.2 集群限流
 
 限流**必须按集群维度做**：网关多副本部署，若各副本本地计数，实际放行量 = 副本数 × 配额，副本一扩配额就翻倍。
@@ -1561,6 +1562,7 @@ tokens = tokens + math.floor(elapsed * qpm / 60000)   -- ❌ 看着合理，实�
 - 超时（`timeout_ms`）、重试（仅幂等 GET，带指数退避 + jitter + 次数上限，避免把后端抖动放大成雪崩）；
 - **地址级容错**：某 Pod 上某地址连续失败达阈值即熔断，冷却期后借真实请求做半开试探恢复（2.7、3.4）；单地址时无第二地址可转，退化为快速失败 + 熔断。**地址下线就是从 `endpoints` 删除该元素**（2.1），不做状态标记、不留过渡期；
 - 工具级 `enabled` 开关、服务级 `DISABLED`。
+
 
 
 
