@@ -39,7 +39,7 @@
     <text x="42" y="141">direction  IN/OUTBOUND</text>
     <text x="42" y="160">sys_code、scheme_key</text>
     <text x="42" y="179">api_in、api_name</text>
-    <text x="42" y="198">default_credential 加密</text>
+    <text x="42" y="198">default_credential 随机串</text>
     <text x="42" y="217">qpm_limit、burst（sys 档）</text>
 
     <text x="742" y="122">id（PK）</text>
@@ -65,7 +65,7 @@
     <text x="42" y="617">upstream_scheme_id 覆盖</text>
     <text x="42" y="636">enabled、version、deleted</text>
 
-    <text x="742" y="522">id + created_at（PK）</text>
+    <text x="742" y="522">id（PK）</text>
     <text x="742" y="541">sys_code、face、route</text>
     <text x="742" y="560">service_id、tool_id</text>
     <text x="742" y="579">耗时、结果码、原因</text>

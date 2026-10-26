@@ -772,7 +772,10 @@ public boolean granted(McpService svc, String rawToolName, Caller caller) {
 > 主动健康检测（心跳上报 / 后台定时探活）**一期不做**，它的收益是"后端刚挂、还没有流量时就提前摘掉"，而在本方案里后端的生命周期由容器平台托管，实例退出是计划内动作。**要加的时候扩展点就在 `endpoints[]` 元素上加状态字段**，选址与熔断逻辑不用改（2.1 开头）。
 
 - **下线按层次区分**（2.1）：**停用一个服务**走 `mcp_gw_service.status = DISABLED`（工具、授权、地址全部保留，可原地恢复）；**摘掉其中某一个后端地址**才从 `endpoints` 删除该元素，连接池随之 `evict`。**不要用熔断来当下线用**——那只是"这段时间为我不用它"，冷却期过了还会被试探回来；
-- **缓存**：启动 + 每 30s 按 `version` 增量刷新 Caffeine 快照（服务 + 入库工具 + 认证方案 + **授权 `mcp_gw_grant`**）。授权在内存里建成 `Map<sys_code, Map<serviceId, Grant>>`，`granted()` 是两次 map 查找、**不做 JOIN、不查库**（判定在 `tools/list` 与 `tools/call` 的热路径上，每个工具都要过一次）。软删也能被感知；跨副本变更用广播（Redis pub/sub 或定时全量兜底）主动失效；**授权变更必须走同一条失效链路**，否则改了授权要等 30s 才生效，紧急封禁形同虚设；
+- **缓存**：启动 + 之后每隔 **5s** 按 `version` 增量刷新 Caffeine 快照（服务 + 入库工具 + 认证方案 + **授权 `mcp_gw_grant`**）。授权在内存里建成 `Map<sys_code, Map<serviceId, Grant>>`，`granted()` 是两次 map 查找、**不做 JOIN、不查库**（判定在 `tools/list` 与 `tools/call` 的热路径上，每个工具都要过一次）。软删也能被感知；
+  **副本之间不互发任何消息**。缓存是 MySQL 的只读投影，本地唯一会写的东西是熔断计数——而它本来就是 Pod 私有（见下），所以**不存在"A Pod 改了缓存要通知 B Pod 作废"的场景**。变更传播只有一条链路：每个 Pod 自己按 `version` 拉。由此得出两个结论：
+  - **传播延迟的上界就是这个 5s**：管理请求落在哪个 Pod，那个 Pod 写完库后**立刻刷新自己的快照**，其余副本最迟 5s 后跟上。紧急封禁、Key 撤销这两类时效性最强的动作，也因此可以直接用"≤5s 全集群生效"来描述，不必再去论证广播；
+  - **不做 Redis pub/sub 广播**。它要解决的是同一个延迟问题，却要额外处理订阅断连、消息丢失、以及"广播到了但这一侧刷新没成功"三种新故障；而这里变更的唯一入口是管理面、QPS 极低，5s 已经够用了；
 - **选址**：默认单地址（绝大多数服务），直接取 `endpoints` 唯一元素；配了多地址时才按 `weight` 加权轮询 + 故障转移，**当前未被本 Pod 熔断的元素才进候选名单**；**无候选地址时快速失败并记 `SERVICE_OFFLINE`**，不要挂在失效连接上等超时。**多地址仅作逃生通道**（灰度、异构后端），常态下的负载均衡由 K8s Service / 注册中心承担，网关不重复实现；
 - **MCP_REMOTE 工具列表**：不在注册表，运行时枚举 + Caffeine 缓存（TTL 30~60s），后端工具变化时由后端推来的 `notifications/tools/list_changed` 或手动刷新触发失效。**注意这条的方向**：网关是作为 **client** 接收后端的通知、失效的是网关自己的缓存；作为 server，网关**不会**把这个事件推给调用方（无 capabilities），上行侧仍是纯无状态（1.2）；
 - **引用与级联（代码实现，无外键、无物理删除）**：注册 / 保存前校验 `service_id`、`scheme_id` 存在且未软删；停用服务时先停用其下工具；`mcp_gw_auth_scheme` 只允许软删 / 停用，删除前检查是否被引用。
@@ -784,9 +787,9 @@ public boolean granted(McpService svc, String rawToolName, Caller caller) {
 
 ### 2.8 调用日志表 `mcp_gw_call_log`
 
-**定位 L2（按需开启）**：默认只输出结构化调用日志（7.4 的 L1），需要长期留存 / 多维检索 / 合规举证时才异步落本表，由配置开关启用。表结构在 M1 即建好，写入与否由开关控制。
+**定位 L2（按需开启）**：默认只输出结构化调用日志（7.4 的 L1），需要**多维检索 / 对外查询 / 举证**时才异步落本表，由配置开关启用；留存默认 30 天，由定时删除控制（见下方"清理"）。表结构在 M1 即建好，写入与否由开关控制。
 
-网关需要能回答"谁在什么时候用哪个工具传了什么参数、拿到什么结果"——L1 日志能回答大部分，回答不了的（长期留存、按调用方/工具多维检索、业务侧查询）才落这张表。
+网关需要能回答"谁在什么时候用哪个工具传了什么参数、拿到什么结果"——L1 日志能回答大部分（且更早触达告警），回答不了的（**按调用方 / 服务回溯、业务侧查询、合规举证**）才落这张表，它不是长期归档设施，量也撑不起这个定位。
 
 | 字段                           | 类型                     | 说明                                                                                                                                                     |
 | ---------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -802,11 +805,11 @@ public boolean granted(McpService svc, String rawToolName, Caller caller) {
 | `deny_reason`                | VARCHAR(64)            | 被拒原因，取 7.4 的枚举（`NOT_GRANTED` / `NOT_IN_SERVICE_ALLOWLIST` / `RATE_LIMITED` / `EGRESS_DENIED` / `AUTH_FAILED` / `UPSTREAM_AUTH_FAILED`），**DENIED 必须记录** |
 | `http_status` / `error_code` | INT / VARCHAR(64)      | 后端状态码与错误码                                                                                                                                              |
 | `cost_ms`                    | INT                    | 耗时                                                                                                                                                     |
-| `created_at`                 | DATETIME               | 时间（按月分区，保留 30~90 天）                                                                                                                                    |
+| `created_at`                 | DATETIME               | 写入时间；**不做分区**，保留期由定时删除控制（默认 30 天，见下方"清理"）                                                                                                     |
 
 ```sql
 CREATE TABLE mcp_gw_call_log (
-  id            BIGINT       NOT NULL AUTO_INCREMENT COMMENT '自增主键；因按月分区，复合主键必须带上created_at',
+  id            BIGINT       NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   trace_id      VARCHAR(64)  COMMENT '全链路追踪ID，从L1日志/告警单点跳过来查',
   sys_code      VARCHAR(32)  COMMENT '调用方系统码(入口鉴权后的权威值)，与监控同一口径',
   face          VARCHAR(8)   COMMENT '入口面 MCP/PROXY/ADMIN',
@@ -820,28 +823,38 @@ CREATE TABLE mcp_gw_call_log (
   http_status   INT          COMMENT '后端状态码',
   error_code    VARCHAR(64)  COMMENT '后端错误码',
   cost_ms       INT          COMMENT '耗时(毫秒)',
-  created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '写入时间，按月分区键',
-  PRIMARY KEY (id, created_at),
+  created_at    DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '写入时间，定时清理按此列滚动删除',
+  PRIMARY KEY (id),
+  KEY idx_created_at (created_at),           -- 专为清理任务的时间扫描，其余复合索引带不动它
   KEY idx_trace (trace_id),
   KEY idx_sys_time (sys_code, created_at),
   KEY idx_service_time (service_id, created_at),
   KEY idx_status_time (status, created_at)
-) ENGINE=InnoDB
-PARTITION BY RANGE (TO_DAYS(created_at)) (
-  PARTITION p2026_01 VALUES LESS THAN (TO_DAYS('2026-02-01')),
-  PARTITION p2026_02 VALUES LESS THAN (TO_DAYS('2026-03-01')),
-  PARTITION pmax     VALUES LESS THAN MAXVALUE
-);
+) ENGINE=InnoDB;
 ```
 
-> **MySQL 的硬约束：分区表的每个唯一键都必须包含分区表达式用到的列**，所以主键写成 `PRIMARY KEY (id, created_at)` 而不是 `PRIMARY KEY (id)` —— 否则按月分区直接报错。这也是全文唯一一张主键带业务时间列的表。
+> **不做按月分区。** MySQL 的分区**不会自动扩展**：既要提前 `REORGANIZE PARTITION pmax INTO (下月, pmax)`、又要在到期后 `DROP PARTITION`，两件事都压在"每月上线动一次表"这个运维动作上，**漏一次就是写入报错的线上事故**；而它换来的好处（秒级删掉一整个月的数据）在这个体量下并不稀缺——同一件事用分批 `DELETE` 每天跑一趟就能近似达成，代价是几十毫秒一次的索引扫描。**宁可接受可控的删除成本，也不接受"忘了维护就停服"的风险。**
 >
-> **保留 30~90 天的做法是滚动分区**：每月上线前 `ALTER TABLE ... REORGANIZE PARTITION pmax INTO (下月分区, pmax)`，同时对超过留存期的分区 `ALTER TABLE ... DROP PARTITION p2026_01`。**用 DROP PARTITION 而不是 `DELETE FROM ... WHERE created_at < ?`**——后者在千万级表上跑很久、产生大量 undo / 碎片，前者是秒级的元数据操作。
+> **清理：定时分批删除，留存默认 30 天**（`gateway.log.retention-days` 可调，禁止调到 0 或负数）：
+>
+> ```sql
+> DELETE FROM mcp_gw_call_log WHERE created_at < ? ORDER BY id LIMIT 5000;
+> ```
+>
+> 循环直到影响行数不足一批为止。**不要写成一条 `DELETE FROM ... WHERE created_at < ?` 删到底**——千万级表上那是一个大事务：undo 暴涨、binlog 顶满、锁等待一路拖到写入侧（L2 虽然是异步写，但它跟主流程共用一个连接池与同一个实例）。分批之后每批锁定时间可控，对在线写入无感。
+>
+> - **执行者**：应用内定时任务（每天一次，低峰），多副本靠 Redis `SET NX` 抢锁（`gw:lock:log-cleanup`，TTL 兜底）保证只有一个 Pod 在跑；Redis 是限流的既有依赖，不引入新组件。不想放进应用也可以用 K8s CronJob 连上去执行同一条 SQL，效果等价；
+> - **`idx_created_at(created_at)` 就是为这条 `DELETE` 建的**，是它唯一的服务对象，别以"索引太多"为由删掉——缺了它每次清理都是全表扫；
+> - **磁盘不会缩**：InnoDB 的 `DELETE` 只把行标记成可复用，表文件大小不下降。**不要指望 `OPTIMIZE TABLE`**（它是 DDL，重建整张表并长期持锁），空间上限靠留存天数控制；
+> - **L2 未开启时表是空的**，任务每次执行一次走索引的空扫描即可判定无事可做，空转成本为零。
+>
+> **将来的扩展点**：如果日志真的涨到单表亿级、分批删除开始影响写入，替代形态是"按月建独立表 + 按路由表名写入"，到期的月整表 `DROP`；那是另一个量级的工程，届时再评估，不在本期范围内。
 
 **索引按查询路径建，别按直觉加**（这张表是**只追加、量最大**的一张，每多一个索引都是写入成本）：
 
 | 索引                                         | 服务什么查询                                       | 说明                                                                |
 | ------------------------------------------ | -------------------------------------------- | ----------------------------------------------------------------- |
+| `idx_created_at(created_at)`            | **清理任务**：按时间窗分批 `DELETE`（2.8 的 30 天留存）                     | 这条是服务端后台任务的服务对象，不是业务查询——没有它每次清理都是全表扫                    |
 | `idx_trace(trace_id)`                      | 从告警 / L1 日志拿到单号反查这一次调用的全貌                    | 排障第一入口，`trace_id` 区分度极高，单列即可                                      |
 | `idx_sys_time(sys_code, created_at)`       | **最常见的反问**："某个调用方这段时间干了什么"                   | 时间列放后面，让"某系统 + 时间窗"走索引范围扫描                                        |
 | `idx_service_time(service_id, created_at)` | "这个服务被谁调用过、什么时候被调用"                          | 同上。这也是 §2.7「删服务要连带处理授权」之外，评估服务能不能下线时要用到的查询                        |
@@ -1294,7 +1307,7 @@ SchemeRow row = index.get(fingerprint(presentedValue));   // O(1) 命中即为 o
 
 - **为什么必须按值反查**：头名一定会撞车（所有调用方默认都用 `X-Gateway-Key`，也不排除有人配 `X-API-Key`），值不会。走「头名 → 方案」映射的话，同名头的两个系统没法区分，只能退化成逐行尝试比对——就是上面那个侧信道。
 - **同一 `sys_code` 允许多把 Key**（多套部署 / 多环境各一把），反查模型天然支持；限流仍按 `sys_code` 归到同一个配额——多把 Key **共享同一个 sys 档令牌桶**，配额取值规则见 7.2（配不同值时取最小，并告警）；
-- **索引刷新**：管理面改 Key 或软删时发刷新事件；没有 MQ 就按 30s 轮询兜底。**撤销 = 从索引里摘除，不等 TTL 过期**——Key 泄露时"等缓存失效"是不可接受的恢复时间。
+- **索引刷新**：**不引入 MQ / Redis pub/sub**，跟着注册表快照走同一条 5s 的 `version` 增量刷新链路（2.7）；管理请求在本 Pod 写完库后**立即重建本地索引**。**撤销 = 从索引里摘除，不等下一次轮询**——处理请求的那个 Pod 当场做完，其余副本的上界是 5s。这个数字同时是"Key 泄露后彻底失效"的上界，所以**不允许把轮询间隔做成可调的配置项**往上调。
 
 **③ 比对：常数时间**
 
@@ -1478,7 +1491,7 @@ Java 侧两条实现纪律：
 | 档位                    | Redis key                          | 配额值从哪读                                                        | 谁改、多久生效                        |
 | --------------------- | ---------------------------------- | ------------------------------------------------------------- | ----------------------------- |
 | **全局**                | `rl:{env}:global`                  | **配置中心 / 环境变量** `mcp.gw.ratelimit.global-qpm` / `-burst`      | 运维级，改了要重启或刷新配置；**启动时必须配，否则拒绝启动** |
-| **来源系统**（核心）          | `rl:{env}:sys:{sys_code}`          | `mcp_gw_auth_scheme.qpm_limit` / `burst`，限 `direction=INBOUND` 的行 | 管理面改行 → 随注册表快照刷新，≤30s（2.7）    |
+| **来源系统**（核心）          | `rl:{env}:sys:{sys_code}`          | `mcp_gw_auth_scheme.qpm_limit` / `burst`，限 `direction=INBOUND` 的行 | 管理面改行 → 随注册表快照刷新，≤5s（2.7）    |
 | 未识别来源                 | `rl:{env}:sys:unknown`             | 环境变量 `mcp.gw.ratelimit.unknown-qpm`（默认 **300 QPM**，≈5 QPS）   | 刻意给低值，防止未登记来源刷量               |
 | **每工具**               | `rl:{env}:tool:{service}.{tool}`   | `mcp_gw_service.qpm_limit` / `burst`                          | 同上，随快照刷新                      |
 
@@ -1553,7 +1566,7 @@ tokens = tokens + math.floor(elapsed * qpm / 60000)   -- ❌ 看着合理，实�
 - **三档同时扣减、取最先触发的那一档**。例如某工具同时受"服务配额 1200 QPM（≈20 QPS）"和"调用方配额 300 QPM（≈5 QPS）"约束，则该调用方到这个工具最多打出 300 QPM，而所有调用方合计不超过 1200 QPM；
 - **工具级细分配额一期不做**（`mcp_gw_tool` 上没有这两列）：粒度到服务即可，需要单独保护某个热点工具时，正确做法是按 2.5 给它拆一个独立服务。
 
-> **改动配额是配置项变更，不是发版**：调整后跟着注册表快照走同一条失效链路（含 Redis pub/sub 广播），**不要出现"改完配额要等 30s 才生效还不敢改"的情况**——这条与 2.7 对授权缓存的要求一致。
+> **改动配额是配置项变更，不是发版**：调整后跟着注册表快照走同一条 5s 增量刷新链路（2.7），**不要出现"改完配额迟迟不生效，以至于不敢改配额"的情况**——这条与 2.7 对授权缓存的要求共用同一条传播链路，上界同样是 5s。
 - **Redis 不可用时**：默认 **fail-open + 告警**（限流是保护措施而非安全边界，误拒全部流量的代价通常大于短暂超限；安全边界由 `mcp_gw_grant` 授权与鉴权兜底），可按服务改配 fail-closed；
 - Redis 用哨兵或 Cluster，集群限流不能压在单点上；
 
@@ -1640,7 +1653,7 @@ tokens = tokens + math.floor(elapsed * qpm / 60000)   -- ❌ 看着合理，实�
 | 级别                           | 做法                                                                                                            | 适用                       |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------ |
 | **L1 结构化日志**（默认）             | 三个面每个请求输出一行 JSON：时间 / `trace_id` / **`face` + `route`** / **`sys_code`** / **`service_id` + `tool_id`（另附 `service` / `tool` 名字便于人读）** / method / 耗时 / 结果码 / 拒绝原因 / 入参摘要（脱敏）/ Key 指纹，进 ES 或 Loki 检索 | 绝大多数场景够用                 |
-| **L2 落库 `mcp_gw_call_log`**（按需） | 在 L1 之外异步落 MySQL，支持长期留存、多维检索、对外查询                                                                             | 有合规留存或业务侧查询需求时再开，用配置开关启用 |
+| **L2 落库 `mcp_gw_call_log`**（按需） | 在 L1 之外异步落 MySQL，支持按调用方 / 服务 / 单号多维检索、对外查询                                                                         | 有查询或举证需求时再开，用配置开关启用；**默认留存 30 天**（2.8 的定时删除） |
 
 L2 异步写入、失败不阻断主流程、不影响 latency；表结构与字段见 2.8。
 
@@ -1760,7 +1773,7 @@ mcp-gateway/
 - **动态 MCP 连接**：必须官方 SDK 编程式管连接池；不要在 `computeIfAbsent` 里做阻塞初始化，要有单飞、熔断与虚拟线程+信号量舱壁（阻塞调用不占容器线程）；**健康状态放在本 Pod 内存里**，别急着做成跨副本共享的实时健康表（2.7）；
 - **授权必须落在库里，不能落在请求头里**：`x-allow-mcp-tools` 那种"调用方在头里声明能用什么工具"的设计等于**调用方自己给自己授权**，鉴权插件一旦漏配权限就全开。正确做法是由管理员在 `mcp_gw_grant` 授予、网关按 `sys_code` 查表判定；
 - **`tools/call` 校验**：授权只在 `tools/list` 过滤等于没做权限控制，list / call 必须共用同一判定（`granted()`）；
-- **授权默认 fail-closed，且没有"默认放行"开关**：无授权行 = 全禁，要放开就在 `mcp_gw_grant` 里补一行（2.6 规则 2）。紧急封禁依赖缓存失效链路，授权变更必须能主动广播，不能等到下一次 30s 轮询；
+- **授权默认 fail-closed，且没有"默认放行"开关**：无授权行 = 全禁，要放开就在 `mcp_gw_grant` 里补一行（2.6 规则 2）。授权变更的时间上界就是 2.7 那条 **5s 轮询**（管理请求落地的 Pod 立即刷新，其余副本最多晚 5s），**跨副本不做广播**——传播链路只有一条，少了"广播了但那边没刷新成功"这类最难排查的故障；
 - **凭证透传**：默认关闭。透传等于把网关调用于后端的权限等价于调用方自己的权限（混淆代理人），且后端无法追溯是哪个系统；
 - **入站请求头一律不可信**：`X-Sys-Code`、`x-allow-mcp-tools` 这类头由客户端填写，**只能用作"声明"不能用作"判定"**。身份与工具权限必须以 Key 登记值、以及服务端 `mcp_gw_grant` 授权行与 `allow_tools` 为准；出站前删除客户端头、由网关重写 `X-Gateway-*`，否则调用方可以自授权、伪造来源系统，后端日志也会失真；
 - **模板注入**：`{{.args.x}}` 裸插是 URL 注入 / JSON 注入 / SSRF 的入口，转义函数与出站白名单是硬要求；
