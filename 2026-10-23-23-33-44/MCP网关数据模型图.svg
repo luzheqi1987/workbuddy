@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 720" width="1000" height="720" role="img">
   <title>MCP 网关数据模型总览</title>
-  <desc>五张表的关系：工具与服务一对多（service_id），服务引用出网凭证方案（default_upstream_scheme_id），授权表按 sys_code 与 service_id 授予工具权限，调用日志按同一口径记录；虚线表示逻辑引用，无物理外键。</desc>
+  <desc>五张表的关系：工具与服务一对多（service_id），服务引用出网凭证方案（default_upstream_scheme_id），授权表按 sys_code 与 service_id 授予工具权限并承载限流配额，调用日志按同一口径记录；虚线表示逻辑引用，无物理外键。</desc>
   <defs>
     <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
       <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
@@ -40,19 +40,21 @@
     <text x="42" y="160">sys_code、scheme_key</text>
     <text x="42" y="179">api_in、api_name</text>
     <text x="42" y="198">default_credential 随机串</text>
-    <text x="42" y="217">qpm_limit、burst（sys 档）</text>
+    <text x="42" y="217">version、deleted（禁物理删）</text>
 
     <text x="742" y="122">id（PK）</text>
     <text x="742" y="141">sys_code + service_id</text>
     <text x="742" y="160">allow_tools[JSON]</text>
     <text x="742" y="179">effect  ALLOW/DENY</text>
     <text x="742" y="198">status、expire_at</text>
+    <text x="742" y="217">qpm_limit、burst（配额）</text>
+    <text x="742" y="236">tool_quota[JSON] 工具覆盖</text>
 
     <text x="392" y="352">id（PK）、name（UNIQUE）</text>
     <text x="392" y="371">type、transport、status</text>
     <text x="392" y="390">endpoints[JSON]  后端地址</text>
     <text x="392" y="409">allow_tools[JSON] 工具上限</text>
-    <text x="392" y="428">qpm_limit、burst（tool 档）</text>
+    <text x="392" y="428">qpm_limit、burst（每调用方默认）</text>
     <text x="392" y="447">timeout_ms、route_prefix</text>
     <text x="392" y="466">default_upstream_scheme_id</text>
     <text x="392" y="485">version、deleted</text>

@@ -201,7 +201,7 @@
 | `strip_prefix`               | TINYINT       | 否             | 1      | 仅 `REST_PROXY`：转发是否剥掉切面。1=剥（`/proxy/order/list` → `/list`），0=保留整段                                                                                                |
 | `timeout_ms`                 | INT           | 否             | 5000   | 单次后端请求超时（毫秒），不含连接建立与 MCP 握手                                                                                                                                      |
 | `init_timeout_ms`            | INT           | 否             | 15000  | 仅 `MCP_REMOTE`：`initialize` 握手超时，与请求超时分开                                                                                                                         |
-| `qpm_limit`                  | DECIMAL(10,4) | 否             | -      | **本服务所有工具的限流配额**，单位 **次/分钟（QPM）**，**允许小数**（`DECIMAL(10,4)`，见 7.2 单位一节），对应 7.2 的 tool 档。**NULL 表示回退到全局兜底值，不是"不限"**——不提供"不限"这种配置，避免漏配等于裸奔                          |
+| `qpm_limit`                  | DECIMAL(10,4) | 否             | -      | **授予一个新调用方时的默认配额**——注意是**每调用方**，**不是本服务的总量**（7.2）。单位 **次/分钟（QPM）**，**允许小数**（`DECIMAL(10,4)`，见 7.2 单位一节）。真正生效的配额在 `mcp_gw_grant`（2.5）上，这一列只是"授权行没填时自动给多少"。**NULL 表示回退到 env 缺省值，不是"不限"**——不提供"不限"这种配置，避免漏配等于裸奔                          |
 | `burst`                      | INT           | 否             | -      | 令牌桶容量（允许的瞬时突发，单位"次"，**天然是整数**）。NULL 时取 **`ceil(qpm_limit / 60)`**（≈1 秒的量；注意不是取 `qpm_limit`，那会让突发容量放大 60 倍），最小 1                                                  |
 | `config_json`                | JSON          | 否             | {}     | **服务级非凭证配置**（严禁放密钥），模板里用 `.config.x` 引用；密钥一律放 `mcp_gw_auth_scheme`                                                                                               |
 | `protocol_strategy`          | VARCHAR(16)   | 否             | LEGACY | 仅 `MCP_REMOTE`：`LEGACY` / `MODERN` / `AUTO`（自动探测多一次请求，后端协议已知就写死）                                                                                                 |
@@ -230,7 +230,7 @@ CREATE TABLE mcp_gw_service (
   strip_prefix                TINYINT DEFAULT 1 COMMENT 'REST_PROXY: 是否剥前缀',
   timeout_ms                  INT DEFAULT 5000  COMMENT '单次后端请求超时(毫秒)',
   init_timeout_ms             INT DEFAULT 15000 COMMENT 'MCP_REMOTE: initialize握手超时(毫秒)',
-  qpm_limit                   DECIMAL(10,4) COMMENT '本服务工具档配额(次/分钟，可小数)，NULL=回退全局兜底，非不限',
+  qpm_limit                   DECIMAL(10,4) COMMENT '每调用方默认配额(次/分钟，可小数)，非本服务总量；NULL=回退env缺省，非不限',
   burst                       INT COMMENT '令牌桶容量(次，整数)，NULL=ceil(qpm_limit/60)，最小1',
   config_json                 JSON COMMENT '服务级非凭证配置，模板用.config.x引用，严禁放密钥',
   protocol_strategy           VARCHAR(16) DEFAULT 'LEGACY' COMMENT 'MCP_REMOTE: LEGACY/MODERN/AUTO',
@@ -277,7 +277,7 @@ CREATE TABLE mcp_gw_service (
 
 | direction  | 场景             | Key 给谁用             | `sys_code` 含义                                           |
 | ---------- | -------------- | ------------------- | ------------------------------------------------------- |
-| `INBOUND`  | 调用方 → 网关（入口鉴权） | 调网关的 Agent / 业务系统持有 | **调用方来源系统**＝监控主维度、限流主体、日志责任方                            |
+| `INBOUND`  | 调用方 → 网关（入口鉴权） | 调网关的 Agent / 业务系统持有 | **调用方来源系统**＝监控主维度、授权主体、限流的调用方侧维度、日志责任方                  |
 | `OUTBOUND` | 网关 → 后端（出口凭证）  | 后端要求网关出示的 Key       | **后端系统码**（如 `ORDERSYS`、`WEATHER`），只标注归属，**不参与调用方口径的统计** |
 
 > 必填就是必填，两种方向都填，**含义由 `direction` 决定**：`INBOUND` 回答"谁在调用网关"（=监控 / 限流 / 日志主维度），`OUTBOUND` 回答"网关在跟谁说话"（后端归属）。**监控、限流、审计里的 `sys_code` 一律取 `INBOUND`**，两者不能混用，否则会把后端系统当成调用方统计。
@@ -294,8 +294,6 @@ CREATE TABLE mcp_gw_service (
 | `api_in`                  | VARCHAR(8)    | 否    | header     | Key 放在请求哪里：`header` / `query` / `cookie`。**`direction=INBOUND` 的行只能用 `header`**（入口凭证走 query 会泄进 access log 与 `Referer`），其余取值留给后端要求的 `OUTBOUND` 场景；网关启动时校验，违规的行拒绝加载并告警（见 7.1-A）                                                                                          |
 | `api_name`                | VARCHAR(64)   | ✅    | X-API-Key  | 位置对应的名字：头名（如 `X-API-Key`）或查询参数名（如 `api_key`）                                                                                                                                                                                                                            |
 | `default_credential`      | VARCHAR(256)  | 否    | -          | 默认 Key 值，**明文随机字符串**（网关签发，`gw_sk_` + 256 bit 随机，见 7.1-C）。取舍与补偿控制也在 7.1-C：**只放网关自己签发的串，第三方私钥 / 证书一律走外部密钥系统的引用别名**；管理接口列表返回一律不脱敏；轮换 = 覆盖写这一列                                                                                                                              |
-| `qpm_limit`               | DECIMAL(10,4) | 否    | -          | **该调用方的限流配额**，单位 **次/分钟（QPM）**，**允许小数**（每小时 10 次填 `0.1667`，见 7.2 单位一节），对应 7.2 的 sys 档。**只对 `direction=INBOUND` 的行有效**，`OUTBOUND` 行填了也不生效。`INBOUND` 系统与 Key 一一对应（不做密钥轮换），所以配额挂在 Key 行上不存在一对多的歧义。NULL = 回退到全局兜底值，**不表示不限**                                                |
-| `burst`                   | INT           | 否    | -          | 令牌桶容量（允许的瞬时突发，单位"次"，**整数**）。NULL 时取 `ceil(qpm_limit / 60)`，最小 1                                                                                                                                                                                                         |
 | `description`             | VARCHAR(255)  | 否    | -          | 说明                                                                                                                                                                                                                                                                      |
 | `version` / `deleted`     | -             | 否    | 0          | 版本号与软删标记（**禁止物理删除**，避免悬挂引用）                                                                                                                                                                                                                                             |
 | `created_at`/`updated_at` | DATETIME      | 否    | now        | 时间戳                                                                                                                                                                                                                                                                     |
@@ -304,13 +302,11 @@ CREATE TABLE mcp_gw_service (
 CREATE TABLE mcp_gw_auth_scheme (
   id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
   direction           VARCHAR(8)  NOT NULL DEFAULT 'OUTBOUND' COMMENT 'INBOUND=入口调用方/OUTBOUND=后端出口',
-  sys_code            VARCHAR(32) NOT NULL COMMENT '系统标识(必填): INBOUND=调用方系统码(监控/限流主维度); OUTBOUND=后端系统码',
+  sys_code            VARCHAR(32) NOT NULL COMMENT '系统标识(必填): INBOUND=调用方系统码(监控/授权/限流调用方侧主维度); OUTBOUND=后端系统码',
   scheme_key          VARCHAR(64) NOT NULL COMMENT '方案别名，唯一',
   api_in              VARCHAR(8)  DEFAULT 'header' COMMENT 'Key位置: header/query/cookie',
   api_name            VARCHAR(64) NOT NULL COMMENT '头名或查询参数名，如 X-API-Key',
   default_credential  VARCHAR(256) COMMENT '默认Key(明文随机串，网关签发，第三方凭据不入库)',
-  qpm_limit           DECIMAL(10,4) COMMENT 'INBOUND行: 该调用方sys档配额(次/分钟，可小数)，NULL=回退全局兜底，非不限',
-  burst               INT COMMENT '令牌桶容量(次，整数)，NULL=ceil(qpm_limit/60)，最小1',
   description         VARCHAR(255),
   version             BIGINT DEFAULT 0,
   deleted             TINYINT DEFAULT 0 COMMENT '禁止物理删除',
@@ -333,15 +329,15 @@ CREATE TABLE mcp_gw_auth_scheme (
 | `idx_version(version)`                      | 缓存增量刷新：`WHERE version > :last`（2.7）                                                                     | 与注册表同源。**注意不给凭证建索引**：7.1 的比对走内存里的 SHA-256 反查，不打库，所以索引没有服务对象；而给一列明文凭证建索引，等于把每把 Key 的原文再抄一份到索引文件里去                      |
 | 示例数据（值为明文示意）：                               |                                                                                                         |                                                                                                                       |
 
-| direction  | sys_code   | scheme_key        | api_in / api_name      | default_credential | 本行限流配额（7.2）                       |
-| ---------- | ---------- | ----------------- | ---------------------- | ------------------ | --------------------------------- |
-| `OUTBOUND` | `ORDERSYS` | `OrderApiKey`     | header `X-API-Key`     | `abcdef123456`     | 不生效（仅 INBOUND 读）                  |
-| `OUTBOUND` | `WEATHER`  | `WeatherApiKey`   | query `api_key`        | `uvwxyz789012`     | 不生效                               |
-| `INBOUND`  | `AGNT`     | `InboundAgentKey` | header `X-Gateway-Key` | `k1m2n3o4p5`       | `qpm_limit=3000`（≈50 QPS）         |
-| `INBOUND`  | `CRMWEB`   | `InboundCrmKey`   | header `X-Gateway-Key` | `q6r7s8t9u0`       | `qpm_limit=1200`（≈20 QPS）         |
-| `INBOUND`  | `BATCHJOB` | `InboundBatchKey` | header `X-Gateway-Key` | `z1x2c3v4b5`       | `qpm_limit=0.1667`（≈10 次/小时，小数配额） |
+| direction  | sys_code   | scheme_key        | api_in / api_name      | default_credential |
+| ---------- | ---------- | ----------------- | ---------------------- | ------------------ |
+| `OUTBOUND` | `ORDERSYS` | `OrderApiKey`     | header `X-API-Key`     | `abcdef123456`     |
+| `OUTBOUND` | `WEATHER`  | `WeatherApiKey`   | query `api_key`        | `uvwxyz789012`     |
+| `INBOUND`  | `AGNT`     | `InboundAgentKey` | header `X-Gateway-Key` | `k1m2n3o4p5`       |
+| `INBOUND`  | `CRMWEB`   | `InboundCrmKey`   | header `X-Gateway-Key` | `q6r7s8t9u0`       |
+| `INBOUND`  | `BATCHJOB` | `InboundBatchKey` | header `X-Gateway-Key` | `z1x2c3v4b5`       |
 
-> 最后一行是 QPM 允许小数的样子：**同一个单位、同一张表，既能表示每秒几十次，也能表示每小时十次**。管理面表单里应该是"10 + 选单位'每小时'"，由前端换算成 `0.1667` 存库、展示时再换算回去——单位只活在输入框那一步（7.2）。
+> **本表不含配额列**：配额挂在授权行 `mcp_gw_grant` 上（2.5 / 7.2），因为限流的维度是"调用方 × 服务（× 工具）"而不是"调用方"。`sys_code` 仍然是监控、授权、日志的主维度，也仍是限流 key 的调用方侧，**只是不再单独拥有一个配额数字**——一个调用方对 A 服务可以是 600 QPM、对 B 服务是每分钟 10 次，这种差异只能落在授权行上。
 
 ---
 
@@ -635,6 +631,9 @@ private Set<String> effectivePassthrough(McpService svc) {
 | `sys_code`                | VARCHAR(32) | ✅  | -         | 被授权的**外部系统码**，取 `mcp_gw_auth_scheme` 中 `direction=INBOUND` 的登记值                |
 | `service_id`              | BIGINT      | ✅  | -         | 授权哪个服务，**逻辑引用 `mcp_gw_service.id`（主键，无外键）**。**按服务授权、按工具细化**                    |
 | `allow_tools`             | JSON        | 否  | null      | **授权的工具**（**原始工具名**数组，不带 `{name}.` 前缀）。null=该服务全部工具（在服务上限内）；`[]`=登记了服务但不放开任何工具 |
+| `qpm_limit`               | DECIMAL(10,4) | 否  | -       | **本行限流配额**：该调用方对该服务的速率，单位 **次/分钟（QPM）**，**允许小数**。NULL = 回退到服务行的默认值，**不表示不限**（7.2） |
+| `burst`                   | INT         | 否  | -         | 令牌桶容量（允许的瞬时突发，单位"次"，整数）。NULL 时取 `ceil(qpm_limit / 60)`，最小 1               |
+| `tool_quota`              | JSON        | 否  | null      | **按工具覆盖配额**（可选）：`{"<原始工具名>": {"qpm_limit": n, "burst": n}}`，`burst` 可省略。**只对需要单独保护的工具配**；未列出的工具继承本行 `qpm_limit`。`REST_PROXY` 不用（无工具概念） |
 | `effect`                  | VARCHAR(8)  | 否  | `ALLOW`   | `ALLOW` 授予 / `DENY` 显式拒绝。**`DENY` 优先级最高**，用于临时封禁某个系统调用某个服务                     |
 | `status`                  | VARCHAR(16) | 否  | `ENABLED` | `ENABLED` / `DISABLED`（临时收回，不改数据，便于恢复）                                         |
 | `expire_at`               | DATETIME    | 否  | -         | 临时授权到期时间，过期自动失效（试用、联调场景）                                                       |
@@ -647,6 +646,9 @@ CREATE TABLE mcp_gw_grant (
   sys_code     VARCHAR(32) NOT NULL COMMENT '被授权的调用方系统码(INBOUND)',
   service_id   BIGINT      NOT NULL COMMENT '逻辑引用mcp_gw_service.id，无物理外键',
   allow_tools  JSON COMMENT '授权工具(原始工具名)，null=该服务全部，[]=不放开任何工具',
+  qpm_limit    DECIMAL(10,4) COMMENT '本行配额(次/分钟，可小数)，调用方x服务；NULL=回退服务行默认值，非不限',
+  burst        INT COMMENT '令牌桶容量(次，整数)，NULL=ceil(qpm_limit/60)，最小1',
+  tool_quota   JSON COMMENT '按工具覆盖配额{原始工具名:{qpm_limit,burst}}，可选；未列出的工具继承本行',
   effect       VARCHAR(8)  NOT NULL DEFAULT 'ALLOW' COMMENT 'ALLOW/DENY，DENY优先',
   status       VARCHAR(16) NOT NULL DEFAULT 'ENABLED' COMMENT 'ENABLED/DISABLED',
   expire_at    DATETIME COMMENT '临时授权到期时间',
@@ -680,13 +682,21 @@ CREATE TABLE mcp_gw_grant (
 
 示例（`mcp_gw_service` 里 `id=1` 是订单服务 `order`、`id=2` 是天气服务 `weather`，有 `createOrder / cancelOrder / refund / listOrders / deleteAll`）：
 
-| sys_code  | service_id    | allow_tools                                  | 效果                |
-| --------- | ------------- | -------------------------------------------- | ----------------- |
-| `AGNT`    | `1` (order)   | `["createOrder","listOrders"]`               | Agent 平台只能建单、查单   |
-| `CRMWEB`  | `1` (order)   | `["createOrder","cancelOrder","listOrders"]` | CRM 可建单、查单、取消     |
-| `PARTNER` | `1` (order)   | `[]`                                         | 已登记但暂不放开任何工具      |
-| `BLOCKED` | `1` (order)   | null，`effect=DENY`                           | 显式封禁，任何工具都拒       |
-| `AGNT`    | `2` (weather) | null                                         | 天气服务的全部工具（在服务上限内） |
+| sys_code  | service_id    | allow_tools                                  | qpm_limit / 覆盖                                                              | 效果                |
+| --------- | ------------- | -------------------------------------------- | --------------------------------------------------------------------------- | ----------------- |
+| `AGNT`    | `1` (order)   | `["createOrder","listOrders"]`               | `600`，`tool_quota={"createOrder":{"qpm_limit":60,"burst":10}}`               | Agent 平台只能建单、查单；建单单独限 60 QPM |
+| `CRMWEB`  | `1` (order)   | `["createOrder","cancelOrder","listOrders"]` | `1200`，无工具覆盖                                                                | CRM 可建单、查单、取消，共 1200 QPM |
+| `PARTNER` | `1` (order)   | `[]`                                         | `30`                                                                        | 已登记但暂不放开任何工具      |
+| `BLOCKED` | `1` (order)   | null，`effect=DENY`                           | `0`（无意义，DENY 优先）                                                            | 显式封禁，任何工具都拒       |
+| `BATCHJOB`| `2` (weather) | null                                         | `0.1667`（≈10 次/小时，**小数配额**）                                                  | 批处理低频调用          |
+
+> 倒数第二行说明 **DENY 与配额无关**：授权先于限流（2.6），被拒的请求不会去扣任何桶，那行的配额是多少都无所谓。
+>
+> 最后一行是 QPM 允许小数的样子：**同一个单位、同一张表，既能表示每秒几十次，也能表示每小时十次**。管理面表单里应该是"10 + 选单位'每小时'"，由前端换算成 `0.1667` 存库、展示时再换算回去——单位只活在输入框那一步（7.2）。
+>
+> 第一行是**工具级覆盖**的样子：`AGNT` 对 order 服务整体 600 QPM，但 `createOrder` 是写操作、单独压到 60 QPM；`listOrders` 没有覆盖，继承 600。两个工具各扣各的桶，互不影响（7.2）。
+
+> **配额与授权同一行的好处**：改配额 = 改授权 = 同一行、同一条 5s 刷新链路（2.7）、同一个操作人。撤回授权时配额一起消失，不会出现"授权没了但配额还占着位"这种需要额外清理的状态。
 
 ---
 
@@ -1300,19 +1310,19 @@ public class McpAggregationHandler {
 // 加载 direction=INBOUND AND deleted=0 的行，构建一个值 -> 登记行 的索引
 // key 用 sha256(凭证明文) 的前 16 字节；比对时同样先摘要，明文不落地到 Map 与日志
 Map<String, SchemeRow> index = rows.stream()
-        .collect(toMap(r -> fingerprint(decrypt(r.getCredentialCipher())), identity()));
+        .collect(toMap(r -> fingerprint(r.getCredential()), identity()));
 
 SchemeRow row = index.get(fingerprint(presentedValue));   // O(1) 命中即为 owner
 ```
 
 - **为什么必须按值反查**：头名一定会撞车（所有调用方默认都用 `X-Gateway-Key`，也不排除有人配 `X-API-Key`），值不会。走「头名 → 方案」映射的话，同名头的两个系统没法区分，只能退化成逐行尝试比对——就是上面那个侧信道。
-- **同一 `sys_code` 允许多把 Key**（多套部署 / 多环境各一把），反查模型天然支持；限流仍按 `sys_code` 归到同一个配额——多把 Key **共享同一个 sys 档令牌桶**，配额取值规则见 7.2（配不同值时取最小，并告警）；
+- **同一 `sys_code` 允许多把 Key**（多套部署 / 多环境各一把），反查模型天然支持；多把 Key 属于同一个调用方身份，因此**共享同一个调用方侧限流桶**（7.2 的 `sst:{sys_code}:...`）。配额不挂在 Key 行上，也就不存在"握哪把 Key 配额不同"的消歧问题——同一 `sys_code` 不管用哪把 Key 进来，计入的都是同一个桶；
 - **索引刷新**：**不引入 MQ / Redis pub/sub**，跟着注册表快照走同一条 5s 的 `version` 增量刷新链路（2.7）；管理请求在本 Pod 写完库后**立即重建本地索引**。**撤销 = 从索引里摘除，不等下一次轮询**——处理请求的那个 Pod 当场做完，其余副本的上界是 5s。这个数字同时是"Key 泄露后彻底失效"的上界，所以**不允许把轮询间隔做成可调的配置项**往上调。
 
 **③ 比对：常数时间**
 
 ```java
-byte[] expected = sha256(decrypt(row.getCredentialCipher()));
+byte[] expected = sha256(row.getCredential());
 byte[] actual   = sha256(presentedValue);
 if (!MessageDigest.isEqual(expected, actual)) {           // 常数时间，且两边等长，不泄漏长度
     return deny(AuthReason.INVALID);
@@ -1445,13 +1455,35 @@ String cred = "gw_sk_" + Base64.getUrlEncoder().withoutPadding()
 
 - **不做单机限流**：进程内计数器（Caffeine / Guava / 信号量）一律不参与限流判定，只用于本地资源保护（如并发连接数上限），不计入配额口径；
 - **唯一事实源 = Redis**：所有副本对同一个 key 计数，Lua 脚本保证「读剩余令牌 → 计算 → 写回」原子性，避免并发下超发；
-- **三档配额**（同时生效，取最先触发的）：
-  - 全局：`rl:{env}:global`
-  - **每来源系统：`rl:{env}:sys:{sys_code}`** —— 一期的核心口径，`sys_code` 与监控、日志同一取值（7.1 / 7.4-C）；未识别来源统一落到 `rl:{env}:sys:unknown`，共享一个低配额，防止未登记来源刷量
-  - 每工具：`rl:{env}:tool:{service}.{tool}`
+- **限流只有一个维度，不存在"档位叠加"**：桶 = **调用方 × 服务 × 工具**（`REST_PROXY` 没有工具概念，退化为 **调用方 × 服务**）。一次调用**只扣一个桶**，没有"多档同时扣减、取最先触发"这回事——**每次 429 都能归责到一个唯一的桶**；
+- **不设任何总量档位**：既没有全局桶，也没有"某个 `sys_code` 的总流量"桶。理由与替代方案见下方「为什么不设总量档位」；
 - **没有更细的一档**：本方案**没有租户 / 用户概念**，调用方的最小粒度就是 `sys_code`（2.5：一项业务一个系统码），因此不存在"同一把 Key 下再按租户切分"的配额。真要细分，正确答案是**让不同业务方各自申请系统码**，而不是在网关里再挖一层维度——后者需要引入身份模型，鉴权表和授权表都要跟着改。
+
+| 面                                    | 桶 key                                              | 说明                                                                                       |
+| ------------------------------------ | -------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| MCP 面（`MCP_REMOTE` / `OPENAPI_REST`） | `rl:{env}:sst:{sys_code}:{service_name}:{raw_tool}` | `tools/call` 一个工具一个桶。**授权先于限流**（2.6），未授权的工具根本走不到限流，所以桶的数量由"实际被调用的组合"决定，不是调用方 × 服务 × 工具的笛卡尔积 |
+| REST 代理面（`REST_PROXY`）              | `rl:{env}:ss:{sys_code}:{service_name}`            | 无工具概念，整条路由共用一个桶                                                                           |
+
+> **桶 key 里用服务名而不是 `service_id`**：这是全文唯一一处"对外用名字"的地方，理由是 Redis key 是**给人看的排查入口**——`rl:prod:sst:AGNT:order:createOrder` 一眼能读懂，`...:7:31` 不能。代价是服务改名等于换一个新桶（旧桶按 TTL 自然回收，期间配额被重置一次），而改名本来就是稀有操作且必须"先新增后下线"（2.3）。**表间关联仍然一律用 id**（2.5），两套场合不同，不要混。
+
 - **算法**：令牌桶（允许短时突发、长期速率受控）。Lua 内按 `elapsed_ms` 连续补充令牌，**令牌数以浮点保存**（见下方实现），不用 Redis key 过期近似；
-- **超限响应**：429 + `Retry-After`，计 `mcp_gw_ratelimit_rejected_total`，并记日志 `status=RATE_LIMITED`；
+- **超限响应**：429 + `Retry-After` + **`X-RateLimit-Scope`（命中的桶，如 `sst:AGNT:order:createOrder`）**，计 `mcp_gw_ratelimit_rejected_total`，并记日志 `status=RATE_LIMITED`。带上 scope 是为了让 429**自证来源**——排查时不用再猜"是哪一档触发的"；
+
+#### 为什么不设总量档位（全局 / sys 总流量）
+
+一期**只有按调用方拆的桶，没有任何"总量"数字**。这不是少配一项，是消掉一类会反复出问题的结构：
+
+- **两个数字必然打架。** 分项配额是"给每个调用方的合同"，总量是另一个人拍的第二个数字。它**小于**分项之和时，合同兑现不了，而且 429 落在谁头上取决于到达顺序——不可预测、不可申诉，排查时看不出到底是谁超了；它**大于**分项之和时永远触发不了，只是个安慰剂。而它唯一真能起作用的场景（某个调用方超发）已经被该调用方自己的桶挡住了。
+- **调用方是闭集，总上界本来就可算。** 无授权行 = 拒绝（2.6 规则 2），所以打到一个后端的所有流量 = Σ 已授权调用方的配额。这个数**有界、有主人、能算出来**，不需要再拍一个数字去兜底。管理面把按服务汇总的**理论上界**直接展示出来（**从授权行算出来，不是另配一个字段**），管理员照后端容量分即可——**总量只有一个真相来源，也就不存在"综合不匹配"**。
+- **总量档位不随扩容伸缩。** 加一个调用方、HPA 扩一波副本都要回头调它；调低了最先被掐的是真实生产流量——这正是要避免的局面：一个谁也说不清依据的数字，在业务高峰把正常请求挡在门外。这是"保护"还是"故障"，取决于那个数字拍得准不准。
+
+**后端整体保护改由这三件事承担**（它们都不受"总和"问题影响）：
+
+1. **并发舱壁**：按后端的信号量上限（1.1 / 3.2），限的是**同时在飞的请求数**。它是硬资源约束，天然等于"这个后端能同时扛多少"，不会与分项配额相乘打架；
+2. **熔断**：后端真扛不住时按失败率快速失败并冷却（2.7），是**按后端实际状况**响应，不依赖任何预估数字；
+3. **告警而非拦截**：服务入口的总速率做成指标 + 告警阈值，超了让人来看。**观察不阻断**——宁可让人判断，也不让一个估错的数字替业务做决定。
+
+**代价要认**：某个调用方的配额给大了、且它真的打满了，网关不会替后端挡住总额，只能靠舱壁和熔断兜。真需要"无论谁来总量不超 X"，正确做法是**调低各授权行的配额或收紧该后端的并发舱壁**，而不是叠一个总量档位。
 
 #### 配额的单位与类型：单位只有一个，数值允许小数
 
@@ -1475,7 +1507,7 @@ String cred = "gw_sk_" + Base64.getUrlEncoder().withoutPadding()
 
 **可读性损失怎么补**：`0.0694` 没人数得出来是"每天 100 次"。正解在**输入层**而不在数据层——管理面表单给一个单位下拉（QPS / QPM / QPH / QPD），输入 `100` 选"每天" → 存 `0.0694` → 反查时按最贴合的单位渲染回"100 次/天"。这与被否掉的 `rate_unit` 列区别就在这里：**那是把单位写进数据模型**，于是快照构建、Lua、一致性告警、后台展示每一处都要按单位分支；**这里是单位只活在表单的一个换算函数里**，网关 / Redis / Lua / 快照看到的永远只有一个数字、一种单位。**一处换算，N 处干净。**
 
-**用 `DECIMAL` 而不是 `FLOAT` / `DOUBLE`**：MySQL 的定点数精确表示，`0.1667` 存进去读出来严格相等，不会像二进制浮点那样出现"配了 0.1、读回来是 0.1000000014"。配额是要被机器比对（同一 `sys_code` 多行一致性告警）也要被人工核对的值，**不容忍浮点误差**。代价是 DECIMAL 运算比 INT 慢一点，但这几张注册表总共几千行、只在快照加载时读一次，可以忽略。
+**用 `DECIMAL` 而不是 `FLOAT` / `DOUBLE`**：MySQL 的定点数精确表示，`0.1667` 存进去读出来严格相等，不会像二进制浮点那样出现"配了 0.1、读回来是 0.1000000014"。配额是要被机器比对（`tool_quota` 覆盖值与授权行回退值的解析、容量视图求和）也要被人工核对的值，**不容忍浮点误差**。代价是 DECIMAL 运算比 INT 慢一点，但这几张注册表总共几千行、只在快照加载时读一次，可以忽略。
 
 Java 侧两条实现纪律：
 
@@ -1486,24 +1518,22 @@ Java 侧两条实现纪律：
 
 #### 配额在哪配置
 
-三档的阈值**有各自的落点**，不是"统一放某处"：
+配额的落点**跟着限流维度走**——维度是"调用方 × 服务（× 工具）"，落点就在 `mcp_gw_grant` 上，解析顺序**自上而下、命中即止**（越靠前越具体）：
 
-| 档位                    | Redis key                          | 配额值从哪读                                                        | 谁改、多久生效                        |
-| --------------------- | ---------------------------------- | ------------------------------------------------------------- | ----------------------------- |
-| **全局**                | `rl:{env}:global`                  | **配置中心 / 环境变量** `mcp.gw.ratelimit.global-qpm` / `-burst`      | 运维级，改了要重启或刷新配置；**启动时必须配，否则拒绝启动** |
-| **来源系统**（核心）          | `rl:{env}:sys:{sys_code}`          | `mcp_gw_auth_scheme.qpm_limit` / `burst`，限 `direction=INBOUND` 的行 | 管理面改行 → 随注册表快照刷新，≤5s（2.7）    |
-| 未识别来源                 | `rl:{env}:sys:unknown`             | 环境变量 `mcp.gw.ratelimit.unknown-qpm`（默认 **300 QPM**，≈5 QPS）   | 刻意给低值，防止未登记来源刷量               |
-| **每工具**               | `rl:{env}:tool:{service}.{tool}`   | `mcp_gw_service.qpm_limit` / `burst`                          | 同上，随快照刷新                      |
+| 顺序 | 落点                                    | 作用域                                    | 说明                                                                                     |
+| -- | ------------------------------------- | --------------------------------------- | -------------------------------------------------------------------------------------- |
+| 1 | `mcp_gw_grant.tool_quota["{raw_tool}"]` | **调用方 × 服务 × 工具**                       | **可选**。只给需要单独保护的热点工具配（如"建单 60 QPM、查单 600 QPM"）；不配就不产生这一层                               |
+| 2 | `mcp_gw_grant.qpm_limit` / `burst`    | **调用方 × 服务**（主配置位）                      | 一个调用方对一个服务的配额。绝大多数场景只填这一处                                                                 |
+| 3 | `mcp_gw_service.qpm_limit` / `burst`  | **该服务的默认值**                             | **每调用方**的默认额度：授出一个新调用方而授权行没填时自动用它。**不是本服务的总量**（2.1）                                       |
+| 4 | env `mcp.gw.ratelimit.default-qpm` / `default-burst` | **最后兜底**                                | **不是限流档位**：不产生任何 Redis key、不参与判定，只用于"上面都没配时填什么"。**启动时必须配，否则拒绝启动**（fail-fast 不变） |
+
+`REST_PROXY` 走同一条链，只是没有第 1 层（无工具概念）。
 
 **数据库里只有一个单位、一个数字，所以单位换算只能靠表单这一层兜住**：管理面必须是"数值 + 单位下拉"，提交前把 QPS / QPH / QPD **换算成 QPM 再落库**，列表页再按最贴合的单位渲染回人类可读的样子。**不允许提供一个裸的数字输入框让人自己填 `0.1667` 或 `3000`**——这条路线上必踩的错误是双向的：把想要的 50 QPS 填成 `50`（变成 0.83 QPS，够用变不够），或反过来把 0.83 QPS 填成 `3000`（限流反向放大 60 倍），而**两种错误从数值表面都看不出来**。
 
-**为什么 sys 档的配额挂在 Key 行上**：限流的主体是 `sys_code`（7.1-A 解析出的权威值），而 `sys_code` 的权威登记处就是 `INBOUND` 的这一行 Key——配额放在身份旁边，改配额和吊销身份走同一条流程，不会出现"Key 已注销但配额还占着"、"两边改了不一致"这类偏差。
+**为什么配额挂在授权行上、而不是 Key 行上**：限流的主体不再是"一个调用方"，而是"一个调用方对一个服务 / 工具"，而这个组合的**权威登记处就是 `mcp_gw_grant`**（2.5）。配额与授权同生同灭：授权行一删，配额跟着消失，不会出现"授权已收回但配额还占着"、"两边改了不一致"这类偏差。反过来挂在 Key 行上，就等于让"调用方"这个维度单独拥有配额，既要为它再定一个维度，又要处理同一 `sys_code` 多把 Key 时取哪个值的消歧问题——**那一整套规则（取最小 + 一致性告警）的存在理由，只是给一个本不该单独存在的维度定值，现在它自然消失了**。
 
-⚠️ **同一 `sys_code` 存在多行 INBOUND 时怎么取**（多套部署 / 多环境各一把 Key，7.1-A 支持这种形态，但它们的限流桶 `rl:sys:{code}` 是**共享的**）：配额值必须唯一，因此规定——**取所有该 `sys_code` 有效行里最小的非 NULL 值**，`burst` 同理。
-
-- 取最小而不是最大，是刻意的 fail-safe：**否则"给自己那把 Key 填个大配额"就成了绕过调用方限流的口子**，而配额本来就不该因握着哪把 Key 而不同；
-- 正确做法是**同一 `sys_code` 的多行配成相同的值**。取最小只是让配错时不至于被利用；
-- 启动加载与快照刷新时做一致性校验：**同一 `sys_code` 出现不同 `qpm_limit` 时告警**，把配置错误暴露出来而不是静默吞掉。
+> 由此也**不再需要"未识别来源"桶**：未登记的 Key 在鉴权阶段就被 401 拒掉（7.1-A），根本走不到限流。
 
 **为什么配额不入 Redis**：Redis 里只有两个值——当前令牌数和上次补充时间。**配额来自网关内存里的注册表快照**（2.7 按 `version` 增量刷新），因此 Redis 整体不可用时 fail-open 之后，配额信息一点没丢，恢复即可继续按原配额限流；要是把配额本身也放进 Redis，一次 Redis 故障就会连带把配额冲掉，恢复期等于裸奔。**这跟"限流不算安全边界"是两件事**——前者说的是 counting，后者说的是 decision。
 
@@ -1512,7 +1542,7 @@ Java 侧两条实现纪律：
 速率从"每秒几个整数"变成"每分钟几个"之后，**每秒应补充多少令牌基本一定不是整数**（`30 QPM = 0.5/秒`、`10 QPM ≈ 0.167/秒`）。这意味着令牌桶里那个"当前令牌数"必须按小数学管理，否则会踩到一个很隐蔽的坑。
 
 ```lua
--- KEYS[1] = 桶 key，如 rl:prod:sys:AGNT
+-- KEYS[1] = 桶 key，如 rl:prod:sst:AGNT:order:createOrder
 -- ARGV[1] = qpm（次/分钟）  ARGV[2] = burst（令牌上限）  ARGV[3] = cost（本次消耗，固定 1）
 local qpm, burst, cost = tonumber(ARGV[1]), tonumber(ARGV[2]), tonumber(ARGV[3])
 
@@ -1554,17 +1584,18 @@ tokens = tokens + math.floor(elapsed * qpm / 60000)   -- ❌ 看着合理，实�
 
 **② `Retry-After` 用算出来的值，别写死。** `retry_ms = ceil(缺失令牌数 / 每秒补充速率 × 1000)`，`HTTP 429` 头里取 `max(1, ceil(retry_ms/1000))` 秒并**如实返回、不截断**。低频配额下这个数会很大：`10 次/小时` 的桶打空后算出来是 `Retry-After: 360`，看着夸张但它是诚实的——截成 60 秒只会让客户端更早重试、把压力放大。反过来，网关侧要对**"单次等待 > 60s 的限流拒绝"单独告警**：持续撞这种低频配额通常说明上游根本没做本地节流，靠网关返回 429 兜着不是办法。
 
-**③ 冷桶的 TTL 必须长于"从空补到满"的时间。** `PEXPIRE` 的目的是回收长期没人调用的桶（`rl:tool:*` 这种按服务/工具拆的 key 会随时间变多），不是实现补充逻辑。TTL 若短于 `burst / qpm` 分钟，冷桶会在补满前被删掉——下一次调用等于重新拿到一个满桶，**这本身就是一个绕过配额的窗口**。
+**③ 冷桶的 TTL 必须长于"从空补到满"的时间。** `PEXPIRE` 的目的是回收长期没人调用的桶（`rl:sst:*` 这种按调用方 × 服务 × 工具拆的 key 会随时间变多），不是实现补充逻辑。TTL 若短于 `burst / qpm` 分钟，冷桶会在补满前被删掉——下一次调用等于重新拿到一个满桶，**这本身就是一个绕过配额的窗口**。
 
 **④ Redis 5 之前不要在脚本里调 `TIME`**：那个版本要求脚本必须是确定性写入，调用 `TIME` 会报错。早期版本的做法是 `now_ms` 作为参数从应用方传入，代价是必须保证各节点 NTP 对齐，否则不同副本眼里的补充速率不一致。
 
 **缺省与兜底口径（防止漏配变成不限）**
 
 - **`NULL` 一律表示"回退到兜底值"，不表示"不限"。** 这个约定必须写死在系统里：**不提供"不限"这种配置**。想要更大的配额就填大，而不是开一个绕过开关——**"NULL = 不限"一旦成立，漏配就等于把限流整套关掉了**；
-- 兜底链：**服务 / Key 行未配 → 用全局档的值 → 全局也没配就启动失败**（fail-fast，不要等到线上才发现所有配额都是缺省值）；
+- 兜底链：**工具覆盖 → 授权行 → 服务默认值 → env 缺省 → env 也没配就启动失败**（fail-fast，不要等到线上才发现所有配额都是缺省值）；
 - `burst` 未配时取 **`ceil(qpm_limit / 60)`**（≈1 秒的量），最小为 1。**这里最容易写错**：沿用 QPS 时代的"`burst` 缺省取 `qpm_limit`"会让突发容量凭空放大 60 倍——配 `600 QPM`（≈10 QPS）却允许一次打满 600 次突发，等于限流形同虚设。低频配额（`qpm_limit < 60`）算出来必然是 1，**这是对的**：每小时 10 次本来就不该有"攒着一次性打完"的额度，不要为了数字好看把它拉大；需要严格匀速的调用方显式把 `burst` 填成 1；
-- **三档同时扣减、取最先触发的那一档**。例如某工具同时受"服务配额 1200 QPM（≈20 QPS）"和"调用方配额 300 QPM（≈5 QPS）"约束，则该调用方到这个工具最多打出 300 QPM，而所有调用方合计不超过 1200 QPM；
-- **工具级细分配额一期不做**（`mcp_gw_tool` 上没有这两列）：粒度到服务即可，需要单独保护某个热点工具时，正确做法是按 2.5 给它拆一个独立服务。
+- **一次调用只扣一个桶**（命中的那一档），**不存在多档叠加扣减**。例：`AGNT` 对 `order` 服务配 600 QPM，又给 `createOrder` 单独配 60 QPM——那么 `createOrder` 打的是 60 那个桶，其余工具打 600 那个桶，**两者互不影响、各自计满各自的**。这条是刻意选的：叠加扣减会让"到底哪个配额卡住了这次调用"变成一个需要推理的问题，而单桶让每次 429 都自证来源；
+- **工具级配额只对"确实需要单独保护的工具"配**：它是逃生舱口而非常规旋钮。一个服务 30 个工具里通常只有一两个重量级操作需要单独限，其余继承授权行的值即可——**配得越细，越要有人维护**，别为了"看起来精细"把每个工具都填一遍；
+- **服务行上的 `qpm_limit` 是"每调用方"的默认值，不是总量**（2.1）：给 `order` 服务配 600 QPM、再授权 3 个调用方，理论入口上界是 1800 QPM。管理面必须把这个**汇总出来的上界**显示给管理员（算出来的，不是再配一个字段），否则"配 600"很容易被误读成"这个后端总共 600"。
 
 > **改动配额是配置项变更，不是发版**：调整后跟着注册表快照走同一条 5s 增量刷新链路（2.7），**不要出现"改完配额迟迟不生效，以至于不敢改配额"的情况**——这条与 2.7 对授权缓存的要求共用同一条传播链路，上界同样是 5s。
 - **Redis 不可用时**：默认 **fail-open + 告警**（限流是保护措施而非安全边界，误拒全部流量的代价通常大于短暂超限；安全边界由 `mcp_gw_grant` 授权与鉴权兜底），可按服务改配 fail-closed；
@@ -1605,7 +1636,7 @@ tokens = tokens + math.floor(elapsed * qpm / 60000)   -- ❌ 看着合理，实�
 | `mcp_gw_tool_call_duration_seconds`      | Histogram | `sys_code,service,tool`                | 工具级时延，定位"哪个系统的哪个工具慢"                                                      |
 | `mcp_gw_tool_list_seconds`               | Histogram | `sys_code`                             | `tools/list` 时延；聚合多个后端，串行拉取时延会叠加到首 token，必须单独看                            |
 | `mcp_gw_auth_failures_total`             | Counter   | `face,reason`                          | 鉴权失败。`reason`：`MISSING`/`INVALID`/`DISABLED`/`SYS_CODE_MISMATCH`/`TOO_MANY_FAILURES`（7.1-A）。**失败时身份不可信，一律不带 `sys_code`** |
-| `mcp_gw_ratelimit_rejected_total`        | Counter   | `sys_code,scope`                       | 限流拒绝量，`scope`：`global`/`sys`/`tool`                                        |
+| `mcp_gw_ratelimit_rejected_total`        | Counter   | `sys_code,service,tool,source`          | 限流拒绝量。**`source` = 命中哪一档**：`tool_quota`（工具覆盖）/ `grant`（授权行）/ `service_default`（服务默认值）。**不带 scope 标签时这个指标没法用**——看到拒绝量涨了却不知道是哪个配额卡住的，等于把排查推回猜谜                    |
 | `mcp_gw_backend_duration_seconds`        | Histogram | `service,tool`                         | 纯后端耗时（不含网关处理），区分"我们慢"还是"后端慢"                                              |
 | `mcp_gw_upstream_health`                 | Gauge     | `service,endpoint,instance`            | 后端地址熔断状态（1 可用、0 熔断）。**必须带 `instance`（本 Pod 标识）**：熔断是每 Pod 的局部状态（2.7），只按 `service` 聚合会看到互相矛盾的取值 |
 | `mcp_gw_service_tools`                   | Gauge     | `service`                              | 各服务暴露的工具数，异常跌零=后端掉线或 spec 解析失败                                            |
@@ -1761,7 +1792,7 @@ mcp-gateway/
 2. **M2 链路一 + 观测底座**：`McpSyncClient` 连接池（单飞 / 熔断 / 虚拟线程+舱壁），完成聚合与 `tools/call`，list 与 call 双处授权校验（`granted()`），后端工具列表缓存；同期上线 **统一埋点（7.4-A）+ `sys_code` 维度的三面全路由指标 + `/actuator/health` 依赖检查 + `trace_id` 贯穿 + 告警规则**，以及 **L1 结构化调用日志（DENIED 必记）**。观测与链路一同批交付，不允许先上线再补监控；
 3. **M3 链路二**：OpenAPI 解析生成工具（operationId 兜底、tag 白名单、数量上限、人工锁定）+ position / argsTo* 归位 + 转义与 SSRF 出站白名单 + 响应 / 错误模板；
 4. **M4 链路三**：REST 透传代理（头剥离、Host / XFF、`UriComponentsBuilder`、删除授权类请求头）+ 流式分支；
-5. **M5 治理**：两层 APIKEY 鉴权（**入口解析 `sys_code` 权威值 + 请求头比对，不一致 401**）、**调用方授权 `mcp_gw_grant`（fail-closed，含后台授权管理）**、调用链头规范（7.5：入站 `X-Sys-Code` 声明、出站 `X-Gateway-Sys-Code` 重写、响应回传 `X-Gateway-Trace-Id`）、**默认不透传 + 显式开关**、Redis 集群限流（唯一事实源；**配额落库，单位统一「次/分钟」**：`mcp_gw_auth_scheme.qpm_limit` 为 sys 档、`mcp_gw_service.qpm_limit` 为 tool 档，全局与 unknown 走环境变量）、**全局配额未配则拒绝启动**、DENIED 专项告警与 `deny_reason` 枚举；
+5. **M5 治理**：两层 APIKEY 鉴权（**入口解析 `sys_code` 权威值 + 请求头比对，不一致 401**）、**调用方授权 `mcp_gw_grant`（fail-closed，含后台授权管理）**、调用链头规范（7.5：入站 `X-Sys-Code` 声明、出站 `X-Gateway-Sys-Code` 重写、响应回传 `X-Gateway-Trace-Id`）、**默认不透传 + 显式开关**、Redis 集群限流（唯一事实源；**维度 = 调用方 × 服务（× 工具），一次调用只扣一个桶**，无全局 / sys 总量档位；**配额落在 `mcp_gw_grant`**，工具级覆盖 `tool_quota`，服务行只提供"每调用方默认值"，单位统一「次/分钟」）、**env 缺省值未配则拒绝启动**、DENIED 专项告警与 `deny_reason` 枚举；
 6. **M6 加固**：熔断阈值与冷却期调优、**凭证存储方式复核（一期明文，7.1-C；必要时按 C-5 的扩展点改造为加密存储）**、调用日志脱敏、模板与工具定义版本灰度、压测；
 7. **M7（按需）**：多地址权重轮询 / 故障转移（默认单地址，非必需）；`endpoints` 规模变大时再评估是否拆出独立地址表；**L2 `mcp_gw_call_log` 异步落库**（有合规留存或查询需求时才开）。
 
